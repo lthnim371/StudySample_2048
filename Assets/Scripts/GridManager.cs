@@ -20,7 +20,6 @@ public class GridManager : MonoBehaviour {
     public EmptyTile standardTile;
     public GameObject SpriteTilesGameObject;
 
-
     //임시처리. 후에 xml데이터로 처리하시오
     //public SpriteRenderer[] numberSrcImgs;
     //public UIAtlas _numberSrcImgs;
@@ -30,6 +29,7 @@ public class GridManager : MonoBehaviour {
     private List<EmptyTile> inactiveTiles;
     public List<EmptyTile> activeTiles;
     private NumberTile numberTiles;
+    private InputDirection inputDirection;
 
     void Awake()
     {
@@ -45,7 +45,7 @@ public class GridManager : MonoBehaviour {
         //_imageNumber.atlas = _numberSrcImgs;
         //_imageNumber.spriteName = "2048";
         //Debug.Log(_imageNumber.spriteName);
-            }
+    }
 
     // Use this for initialization
     void Start() {
@@ -70,14 +70,14 @@ public class GridManager : MonoBehaviour {
         float colSizeOffset_x = col.bounds.size.x;
         float colSizeOffset_y = col.bounds.size.y;
         //print(string.Format("{0}max , {1}size , {2}extents , {3}center",
-          //  col.bounds.max, col.bounds.size, col.bounds.extents, col.bounds.center));
+        //  col.bounds.max, col.bounds.size, col.bounds.extents, col.bounds.center));
         for (int i = 0; i < this.row; i++)
         {
             Ray2D ray;
             EmptyTile findTile;
             int temp_i = i + 1;
             Vector2 tempPos;
-            
+
             for (int j = 1; j < this.column; j++)
             {
                 tempPos = this.allTiles[i, j - 1].transform.position;
@@ -104,8 +104,9 @@ public class GridManager : MonoBehaviour {
         }
     }
 
-    // Update is called once per frame
-    void Update() {
+    public InputDirection InputDirection
+    {
+        get { return this.inputDirection; }
     }
 
     ////인덱스 값으로 월드 좌표 찾기
@@ -143,7 +144,7 @@ public class GridManager : MonoBehaviour {
     }
 
     //랜덤으로 빈 셀을 뽑아 새로운 숫자 투입
-    public void AddNewNumberCell()
+    public void AddNewNumberTile()
     {
         //일단 임시로 모든 셀이 활성화되어있다면 입력 받지 않기...추후에 변경 바람
         if (this.inactiveTiles.Count <= 0)
@@ -163,15 +164,16 @@ public class GridManager : MonoBehaviour {
     //비활성화 셀목록 정리
     public void SetTileList(EmptyTile tile, bool isActive)
     {
-        if (isActive == true)
+        if (isActive == true) //활성화 목록에 투가라면..
         {
+            //비활성화목록의 값과 일치한다면..
             if (this.inactiveTiles.Contains(tile) == true)
             {
-                this.inactiveTiles.Remove(tile);
-                this.activeTiles.Add(tile);
+                this.inactiveTiles.Remove(tile); //비활성화목록에서 제거하고
+                this.activeTiles.Add(tile); //활성화목록에 추가
             }
         }
-        else
+        else //위와 반대
         {
             if (this.activeTiles.Contains(tile) == true)
             {
@@ -184,17 +186,20 @@ public class GridManager : MonoBehaviour {
     //모든 활성화된 숫자들 제거
     public void Reset()
     {
+        //활성화목록을 돌면서 
         foreach(EmptyTile tempTile in this.activeTiles)
         {
-            tempTile.RemoveNumberSprite();
-            this.inactiveTiles.Add(tempTile);
+            tempTile.RemoveNumberSprite(); //스프라이트를 제거하고
+            this.inactiveTiles.Add(tempTile); //비활성화 목록에 추가
         }
-        this.activeTiles.Clear();
+        this.activeTiles.Clear(); //활성화목록 모두 비우기
     }
 
     //이동키에 따른 정보 전달
     public void ReadyMove(InputDirection inputDirection)
     {
+        this.inputDirection = inputDirection; //입력키 보관(타일 이동시 필요)
+
         //일단 임시로 모든 셀이 활성화되어있다면 입력 받지 않기...추후에 변경 바람
         //if (this.inactiveTiles.Count <= 0)
         //{
@@ -202,7 +207,10 @@ public class GridManager : MonoBehaviour {
         //    return;
         //}
 
-        switch (inputDirection)
+        //타일보관은 맨좌측상단(0,0)을 기준으로 1행 4열로 보관하고 있다.
+        //ex) [0,0] [0,1] [0,2]...우측방향의 타일들
+        //  [0,0] [1,0] [2,0]...아래측방향의 타일들
+        switch (this.inputDirection)
         {
             case InputDirection.Left:
                 for (int i = 0; i < this.row; i++)
@@ -214,9 +222,9 @@ public class GridManager : MonoBehaviour {
                         //tempTiles[j] = this.allTiles[i, j];
                         EmptyTile tempTile = this.allTiles[i, j]; //한 행의 열을 계속 검사하는거다..
 
-                        for (int k = 1; (j + k) < this.column; k++)
+                        for (int k = 1; (j + k) < this.column; k++) //현재 열과 다음 열의 타일 비교를 위함
                         {
-                            if (this.allTiles[i, j + k].LinkNumberSprite != null)
+                            if (this.allTiles[i, j + k].LinkNumberTile != null) //다음 열에 숫자타일이 존재한다면..
                             {
                                 //업그레이드 파악이었다면 기준 타일을 다음 타일로 하기(이동이면 혹시 모르니 계속 검사)
                                 if (this.UpgradeOrMove(tempTile, this.allTiles[i, j + k]) == true)
@@ -238,7 +246,7 @@ public class GridManager : MonoBehaviour {
 
                         for (int k = 1; (j - k) >= 0; k++)
                         {
-                            if (this.allTiles[i, j - k].LinkNumberSprite != null)
+                            if (this.allTiles[i, j - k].LinkNumberTile != null)
                             {
                                 //업그레이드 파악이었다면 기준 타일을 다음 타일로 하기(이동이면 혹시 모르니 계속 검사)
                                 if (this.UpgradeOrMove(tempTile, this.allTiles[i, j - k]) == true)
@@ -260,7 +268,7 @@ public class GridManager : MonoBehaviour {
 
                         for (int k = 1; (j + k) < this.row; k++)
                         {
-                            if (this.allTiles[j + k, i].LinkNumberSprite != null)
+                            if (this.allTiles[j + k, i].LinkNumberTile != null)
                             {
                                 //업그레이드 파악이었다면 기준 타일을 다음 타일로 하기(이동이면 혹시 모르니 계속 검사)
                                 if (this.UpgradeOrMove(tempTile, this.allTiles[j + k, i]) == true)
@@ -282,7 +290,7 @@ public class GridManager : MonoBehaviour {
 
                         for (int k = 1; (j - k) >= 0; k++)
                         {
-                            if (this.allTiles[j - k, i].LinkNumberSprite != null)
+                            if (this.allTiles[j - k, i].LinkNumberTile != null)
                             {
                                 //업그레이드 파악이었다면 기준 타일을 다음 타일로 하기(이동이면 혹시 모르니 계속 검사)
                                 if (this.UpgradeOrMove(tempTile, this.allTiles[j - k, i]) == true)
@@ -335,7 +343,7 @@ public class GridManager : MonoBehaviour {
     //true이면 업그레이드 여부 확인한거고 false이면 그냥 이동 여부 확인한것
     private bool UpgradeOrMove(EmptyTile sourTile, EmptyTile destTile)
     {
-        if (sourTile.LinkNumberSprite != null) //기준 타일에 숫자가 존재하면 업그레이드 파악
+        if (sourTile.LinkNumberTile != null) //기준 타일에 숫자가 존재하면 업그레이드 파악
         {
             //int sourNumLev = sourTile.LinkNumberSprite.NumberLevel;
             NumberLevel sourNumLev = sourTile.LinkNumberSprite.NumberLevel;
@@ -346,9 +354,12 @@ public class GridManager : MonoBehaviour {
             {
                 //print(sourNumLev.ToString());
                 //일단 임시로 움직임 없이 바로 변경되도록..추후에 변경바람
-                sourTile.LinkNumberSprite.ChangeNumber(++sourNumLev);
-                destTile.RemoveNumberSprite();
-                this.SetTileList(destTile, false);
+                //sourTile.LinkNumberTile.ChangeNumber(++sourNumLev);
+                //destTile.RemoveNumberSprite();
+                //this.SetTileList(destTile, false);
+
+                
+                sourTile.LinkNumberTile.ChangeNumber(++sourNumLev, false);
 
                 //스코어매니저에 전달
                 ScoreManager.Instance.AddScore(sourTile.LinkNumberSprite.NumberLevel);
@@ -366,5 +377,10 @@ public class GridManager : MonoBehaviour {
             this.SetTileList(destTile, false);
             return false;
         }
+    }
+
+    public bool TileMoving()
+    {
+
     }
 }

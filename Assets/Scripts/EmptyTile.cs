@@ -2,13 +2,16 @@
 using System.Collections;
 
 public class EmptyTile : MonoBehaviour {
-    
+
+    public float moveSpeed = 5f;
+
     private int index_x;
     private int index_y;
     //private int numberLevel = 0;
     //private SpriteRenderer numberSprite;
-    private Vector2 myPos;
-    public NumberTile linkNumberSprite;
+    private Vector2 myPos; //내 위치를 편하게 전달하기 위함
+    private NumberTile linkNumberTile; //연결된 숫자타일
+    private NumberTile targetNumberTile; //끌어올 숫자타일
 
     void Awake()
     {
@@ -25,11 +28,6 @@ public class EmptyTile : MonoBehaviour {
         {
             hit = Physics2D.Raycast()
         }*/
-
-    }
-
-    // Update is called once per frame
-    void Update() {
 
     }
 
@@ -56,11 +54,12 @@ public class EmptyTile : MonoBehaviour {
         get { return this.myPos; }
     }
 
-    public NumberTile LinkNumberSprite
+    public NumberTile LinkNumberTile
     {
-        get { return this.linkNumberSprite; }
+        get { return this.linkNumberTile; }
     }
 
+    //레벨에 맞는 숫자타일을 추가해라
     //public bool AddNumberSprite(int numberLevel)
     public bool AddNumberSprite(NumberLevel numberLevel)
     {
@@ -77,25 +76,48 @@ public class EmptyTile : MonoBehaviour {
         ////print(GridManager.Instance.numberSrcImgs.Length);
 
         //이미 연결된 숫자가 있다면 문제인거다..
-        if (this.linkNumberSprite != null)
+        if (this.linkNumberTile != null)
         {
             print("연결된 숫자스프라이트가 이미 존재한다");
             return false;
         }
-
-        this.linkNumberSprite =
+        //풀링객체를 가져온다.
+        this.linkNumberTile =
             GameObjectPoolManager.Instance[GridManager.Instance.SpriteTilesGameObject.name].
             ActiveGameObject(this.myPos).GetComponent<NumberTile>();
-        if (this.linkNumberSprite == null)
+        if (this.linkNumberTile == null)
             return false;
 
-        this.linkNumberSprite.ChangeNumber(numberLevel);
+        this.linkNumberTile.CurrentTile = this;
+        this.linkNumberTile.ChangeNumber(numberLevel, true); //스프라이트를 변경한다.
         return true;
     }
 
+    //연결된 숫자타일을 비활성화 및 해제한다.
     public void RemoveNumberSprite()
     {
-        this.linkNumberSprite.gameObject.SetActive(false);
-        this.linkNumberSprite = null;
+        this.linkNumberTile.gameObject.SetActive(false);
+        this.linkNumberTile = null;
+    }
+
+    //연결된 숫자타일의 숫자이미지를 갱신해라
+    public void UpdateSprite()
+    {
+        this.linkNumberTile.UpdateSprite();
+    }
+
+    //업그레이드 예약
+    //public void ChangeNumberLevel(NumberLevel numberLevel)
+    public void ReserveUpgrade(NumberLevel numberLevel, NumberTile targetNumberTile)
+    {
+        this.linkNumberTile.ChangeNumber(numberLevel, false);
+        this.targetNumberTile = targetNumberTile;
+    }
+
+    //새로운 숫자타일과 연결한다
+    //public void ChangeNumberTile()
+    public void ConnectNumberTile(NumberTile targetNumberTile)
+    {
+        this.linkNumberTile = this.targetNumberTile = targetNumberTile;
     }
 }

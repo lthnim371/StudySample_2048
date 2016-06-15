@@ -9,7 +9,7 @@ public enum State
 
 public enum InputDirection
 {
-    Left, Right, Up, Down
+    NONE, Left, Right, Up, Down
 }
 
 public enum NumberLevel
@@ -53,8 +53,8 @@ public class GameManager : MonoBehaviour {
         {
             case State.Loaded:
                 this.state = State.WaitingForInput;
-                GridManager.Instance.AddNewNumberCell();
-                GridManager.Instance.AddNewNumberCell();
+                GridManager.Instance.AddNewNumberTile();
+                GridManager.Instance.AddNewNumberTile();
                 ScoreManager.Instance.AddScore(0);
                 break;
             case State.WaitingForInput:
