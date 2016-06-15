@@ -9,7 +9,7 @@ public enum State
 
 public enum InputDirection
 {
-    NONE, Left, Right, Up, Down
+    NONE, LEFT, RIGHT, UP, DOWN, RESET
 }
 
 public enum NumberLevel
@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour {
     }
 
     private State state = State.Loaded;
+    private InputDirection inputDirection = InputDirection.NONE;
 
     void Awake()
     {
@@ -60,37 +61,48 @@ public class GameManager : MonoBehaviour {
             case State.WaitingForInput:
                 if (Input.GetKeyDown(KeyCode.LeftArrow))
                 {
-                    GridManager.Instance.ReadyMove(InputDirection.Left);
+                    this.inputDirection = InputDirection.LEFT;
+                    GridManager.Instance.ReadyMove(this.inputDirection);
                 }
                 else if (Input.GetKeyDown(KeyCode.RightArrow))
                 {
-                    GridManager.Instance.ReadyMove(InputDirection.Right);
+                    this.inputDirection = InputDirection.RIGHT;
+                    GridManager.Instance.ReadyMove(this.inputDirection);
                 }
                 else if (Input.GetKeyDown(KeyCode.UpArrow))
                 {
-                    GridManager.Instance.ReadyMove(InputDirection.Up);
+                    this.inputDirection = InputDirection.UP;
+                    GridManager.Instance.ReadyMove(this.inputDirection);
                 }
                 else if (Input.GetKeyDown(KeyCode.DownArrow))
                 {
-                    GridManager.Instance.ReadyMove(InputDirection.Down);
+                    this.inputDirection = InputDirection.DOWN;
+                    GridManager.Instance.ReadyMove(this.inputDirection);
                 }
                 else if (Input.GetKeyDown(KeyCode.R)) //리셋버튼
                 {
+                    this.inputDirection = InputDirection.RESET;
                     //숫자칸들 초기화하고 처음 2개 만들기로 가기
                     GridManager.Instance.Reset();
                     this.state = State.Loaded;
                     return;
                 }
                 else //아무것도 안 눌렀으면 프레임 패스
+                {
+                    this.inputDirection = InputDirection.NONE;
                     return;
+                }
 
                 //무언가 눌렀다면 스테이트 변경
                 this.state = State.CheckingMatches;                
 
                 break;
             case State.CheckingMatches:
-                GridManager.Instance.AddNewNumberCell();
-                if(GridManager.Instance.IsGameOver() == true)
+                //이동하자
+                GridManager.Instance.MoveTile(this.inputDirection);
+
+                GridManager.Instance.AddNewNumberTile();
+                if (GridManager.Instance.IsGameOver() == true)
                     this.state = State.GameOver;
                 else
                     this.state = State.WaitingForInput;

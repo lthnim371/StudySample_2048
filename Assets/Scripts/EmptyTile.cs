@@ -3,15 +3,12 @@ using System.Collections;
 
 public class EmptyTile : MonoBehaviour {
 
-    public float moveSpeed = 5f;
-
     private int index_x;
     private int index_y;
     //private int numberLevel = 0;
     //private SpriteRenderer numberSprite;
     private Vector2 myPos; //내 위치를 편하게 전달하기 위함
     private NumberTile linkNumberTile; //연결된 숫자타일
-    private NumberTile targetNumberTile; //끌어올 숫자타일
 
     void Awake()
     {
@@ -94,10 +91,11 @@ public class EmptyTile : MonoBehaviour {
     }
 
     //연결된 숫자타일을 비활성화 및 해제한다.
-    public void RemoveNumberSprite()
+    public void DisconnectNumberTile(bool wantNumberTileInactive = false)
     {
-        this.linkNumberTile.gameObject.SetActive(false);
-        this.linkNumberTile = null;
+        if(wantNumberTileInactive == true) //원한다면 연결된 숫자타일 비활성화하기
+            this.linkNumberTile.gameObject.SetActive(false);
+        this.linkNumberTile = null; //연결된 숫자타일 끊기
     }
 
     //연결된 숫자타일의 숫자이미지를 갱신해라
@@ -110,14 +108,20 @@ public class EmptyTile : MonoBehaviour {
     //public void ChangeNumberLevel(NumberLevel numberLevel)
     public void ReserveUpgrade(NumberLevel numberLevel, NumberTile targetNumberTile)
     {
-        this.linkNumberTile.ChangeNumber(numberLevel, false);
-        this.targetNumberTile = targetNumberTile;
+        this.linkNumberTile.ChangeNumber(numberLevel, false); //일단 정보만 수정해놓기
+        targetNumberTile.SetGoal(this, true); //합쳐질 숫자타일에 내 위치를 전달
     }
 
     //새로운 숫자타일과 연결한다
     //public void ChangeNumberTile()
     public void ConnectNumberTile(NumberTile targetNumberTile)
     {
-        this.linkNumberTile = this.targetNumberTile = targetNumberTile;
+        this.linkNumberTile = targetNumberTile; //숫자타일 갱신
+        this.linkNumberTile.SetGoal(this, false); //숫자타일 갱신되었으므로 내 위치 알려주기
+    }
+
+    public void NowMove(InputDirection inputDir)
+    {
+        this.linkNumberTile.NowMove(inputDir);
     }
 }

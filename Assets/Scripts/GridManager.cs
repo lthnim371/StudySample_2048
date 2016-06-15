@@ -14,9 +14,9 @@ public class GridManager : MonoBehaviour {
 
     public int row = 4;
     public int column = 4;
-    public float horizontalSpacingOffset = -2.25f;
-    public float verticalSpacingOffset = -2.5f;
-    public float cellSpacing = 0.5f;
+    //public float horizontalSpacingOffset = -2.25f;
+    //public float verticalSpacingOffset = -2.5f;
+    //public float cellSpacing = 0.5f;
     public EmptyTile standardTile;
     public GameObject SpriteTilesGameObject;
 
@@ -27,9 +27,9 @@ public class GridManager : MonoBehaviour {
 
     private EmptyTile[,] allTiles;
     private List<EmptyTile> inactiveTiles;
-    public List<EmptyTile> activeTiles;
+    private List<EmptyTile> activeTiles;
     private NumberTile numberTiles;
-    private InputDirection inputDirection;
+    private Bounds standardColliderBounds;
 
     void Awake()
     {
@@ -45,6 +45,9 @@ public class GridManager : MonoBehaviour {
         //_imageNumber.atlas = _numberSrcImgs;
         //_imageNumber.spriteName = "2048";
         //Debug.Log(_imageNumber.spriteName);
+
+        BoxCollider2D boxCol = this.standardTile.GetComponent<BoxCollider2D>();
+        this.standardColliderBounds = boxCol.bounds;
     }
 
     // Use this for initialization
@@ -64,6 +67,9 @@ public class GridManager : MonoBehaviour {
         //    }
         //}
         //모든 그리드 셀의 위치를 확보하기(좌측상단부터 우측하단방향으로)
+        //타일보관은 맨좌측상단(0,0)을 기준으로 1행 4열로 보관하고 있다.
+        //ex) [0,0] [0,1] [0,2]...우측방향의 타일들
+        //  [0,0] [1,0] [2,0]...아래측방향의 타일들
         this.allTiles[0, 0] = this.standardTile;
         this.inactiveTiles.Add(this.allTiles[0, 0]);
         BoxCollider2D col = this.standardTile.GetComponent<BoxCollider2D>();
@@ -104,9 +110,9 @@ public class GridManager : MonoBehaviour {
         }
     }
 
-    public InputDirection InputDirection
+    public Bounds StandardColliderBounds
     {
-        get { return this.inputDirection; }
+        get { return this.standardColliderBounds; }
     }
 
     ////인덱스 값으로 월드 좌표 찾기
@@ -132,7 +138,9 @@ public class GridManager : MonoBehaviour {
     //레이캐스트로 그리드셀 찾기
     public EmptyTile FindTile(Ray2D ray)
     {
-        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, this.cellSpacing);
+        float tileSpacing =
+            (this.standardColliderBounds.size.x + this.standardColliderBounds.size.y) * 0.5f;
+        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, tileSpacing);
         if (hit.collider != null)
         {
             //print(hit.collider.name);
@@ -189,7 +197,7 @@ public class GridManager : MonoBehaviour {
         //활성화목록을 돌면서 
         foreach(EmptyTile tempTile in this.activeTiles)
         {
-            tempTile.RemoveNumberSprite(); //스프라이트를 제거하고
+            tempTile.DisconnectNumberTile(true); //스프라이트를 제거하고
             this.inactiveTiles.Add(tempTile); //비활성화 목록에 추가
         }
         this.activeTiles.Clear(); //활성화목록 모두 비우기
@@ -198,21 +206,15 @@ public class GridManager : MonoBehaviour {
     //이동키에 따른 정보 전달
     public void ReadyMove(InputDirection inputDirection)
     {
-        this.inputDirection = inputDirection; //입력키 보관(타일 이동시 필요)
-
         //일단 임시로 모든 셀이 활성화되어있다면 입력 받지 않기...추후에 변경 바람
         //if (this.inactiveTiles.Count <= 0)
         //{
         //    print("방향키 입력하였지만 모든 셀 활성화되었음");
         //    return;
         //}
-
-        //타일보관은 맨좌측상단(0,0)을 기준으로 1행 4열로 보관하고 있다.
-        //ex) [0,0] [0,1] [0,2]...우측방향의 타일들
-        //  [0,0] [1,0] [2,0]...아래측방향의 타일들
-        switch (this.inputDirection)
+        switch (inputDirection)
         {
-            case InputDirection.Left:
+            case InputDirection.LEFT:
                 for (int i = 0; i < this.row; i++)
                 {
                     //Tile[] tempTiles = new Tile[this.column];
@@ -234,7 +236,7 @@ public class GridManager : MonoBehaviour {
                     }//for j
                 }//for i
                 break;
-            case InputDirection.Right:
+            case InputDirection.RIGHT:
                 for (int i = 0; i < this.row; i++)
                 {
                     //Tile[] tempTiles = new Tile[this.column];
@@ -256,7 +258,7 @@ public class GridManager : MonoBehaviour {
                     }//for j
                 }//for i
                 break;
-            case InputDirection.Up:
+            case InputDirection.UP:
                 for (int i = 0; i < this.column; i++)
                 {
                     //Tile[] tempTiles = new Tile[this.column];
@@ -278,7 +280,7 @@ public class GridManager : MonoBehaviour {
                     }//for j
                 }//for i
                 break;
-            case InputDirection.Down:
+            case InputDirection.DOWN:
                 for (int i = 0; i < this.column; i++)
                 {
                     //Tile[] tempTiles = new Tile[this.column];
@@ -319,16 +321,16 @@ public class GridManager : MonoBehaviour {
             {
                 //현재 검사 기준 타일셀 숫자와 우측 및 아래측 타일셀 숫자와 비교하여 등급 동일하면 패스
                 //int currTileNumLev = this.allTiles[i, j].LinkNumberSprite.NumberLevel;
-                NumberLevel currTileNumLev = this.allTiles[i, j].LinkNumberSprite.NumberLevel;
+                NumberLevel currTileNumLev = this.allTiles[i, j].LinkNumberTile.NumberLevel;
 
                 if (j + 1 < this.column &&
-                    currTileNumLev == this.allTiles[i, j + 1].LinkNumberSprite.NumberLevel)
+                    currTileNumLev == this.allTiles[i, j + 1].LinkNumberTile.NumberLevel)
                 {
                     //print(string.Format("sour:{0} , dest:{1}", currTileNumLev, this.allTiles[i, j + 1].LinkNumberSprite.NumberLevel));
                     return false;
                 }
                 if (i + 1 < this.row &&
-                    currTileNumLev == this.allTiles[i + 1, j].LinkNumberSprite.NumberLevel)
+                    currTileNumLev == this.allTiles[i + 1, j].LinkNumberTile.NumberLevel)
                 {
                     //print(string.Format("sour:{0} , dest:{1}", currTileNumLev, this.allTiles[i + 1, j].LinkNumberSprite.NumberLevel));
                     return false;
@@ -343,26 +345,29 @@ public class GridManager : MonoBehaviour {
     //true이면 업그레이드 여부 확인한거고 false이면 그냥 이동 여부 확인한것
     private bool UpgradeOrMove(EmptyTile sourTile, EmptyTile destTile)
     {
+        //print(string.Format("sourName:{0} , destName:{1}", sourTile.name, destTile.name));
+
         if (sourTile.LinkNumberTile != null) //기준 타일에 숫자가 존재하면 업그레이드 파악
         {
             //int sourNumLev = sourTile.LinkNumberSprite.NumberLevel;
-            NumberLevel sourNumLev = sourTile.LinkNumberSprite.NumberLevel;
+            NumberLevel sourNumLev = sourTile.LinkNumberTile.NumberLevel;
             //등급 같아서 업그레이드 가능하다면
             //if (sourNumLev < this.numberSrcImgs.Length - 1 && //최대 등급이 아니고
             if (sourNumLev < NumberLevel._2048 && //최대 등급이 아니고
-                sourNumLev == destTile.LinkNumberSprite.NumberLevel) //등급이 서로 같다면
+                sourNumLev == destTile.LinkNumberTile.NumberLevel) //등급이 서로 같다면
             {
-                //print(sourNumLev.ToString());
                 //일단 임시로 움직임 없이 바로 변경되도록..추후에 변경바람
                 //sourTile.LinkNumberTile.ChangeNumber(++sourNumLev);
                 //destTile.RemoveNumberSprite();
                 //this.SetTileList(destTile, false);
 
-                
-                sourTile.LinkNumberTile.ChangeNumber(++sourNumLev, false);
+                //일단 기준타일에 업그레이드 정보 및 이동할 숫자타일 전달
+                sourTile.ReserveUpgrade(++sourNumLev, destTile.LinkNumberTile);
+                destTile.DisconnectNumberTile(); //이동할려는 숫자타일의 원래 빈타일 연결 끊기
+                //this.SetTileList(destTile, false); //비활성화 목록 추가
 
                 //스코어매니저에 전달
-                ScoreManager.Instance.AddScore(sourTile.LinkNumberSprite.NumberLevel);
+                //ScoreManager.Instance.AddScore(sourTile.LinkNumberSprite.NumberLevel);
             }
 
             //업그레이드 성립 여부 상관없이 더 이상의 검사 진행은 무의미
@@ -371,16 +376,25 @@ public class GridManager : MonoBehaviour {
         else //기준 타일에 숫자가 없다면 이동 명령
         {
             //일단 임시로 움직임 없이 바로 변경되도록..추후에 변경바람
-            sourTile.AddNumberSprite(destTile.LinkNumberSprite.NumberLevel);
-            this.SetTileList(sourTile, true);
-            destTile.RemoveNumberSprite();
-            this.SetTileList(destTile, false);
+            //sourTile.AddNumberSprite(destTile.LinkNumberSprite.NumberLevel);
+            //this.SetTileList(sourTile, true);
+            //destTile.RemoveNumberSprite();
+            //this.SetTileList(destTile, false);
+
+            sourTile.ConnectNumberTile(destTile.LinkNumberTile); //기준타일에 새로운 숫자타일 연결하기
+            destTile.DisconnectNumberTile(); //이동할려는 숫자타일의 원래 빈타일 연결 끊기
+            //this.SetTileList(sourTile, true); //기준타일 활성화
+            //this.SetTileList(destTile, false); //원래 주인타일은 비활성화
+
             return false;
         }
     }
 
-    public bool TileMoving()
+    public void MoveTile(InputDirection inputDir)
     {
-
+        foreach (EmptyTile activeTile in this.activeTiles)
+        {
+            activeTile.NowMove(inputDir);
+        }
     }
 }
