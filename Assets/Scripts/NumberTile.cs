@@ -4,7 +4,7 @@ using System.Collections;
 
 public class NumberTile : MonoBehaviour {
 
-    public float speed = 1f;
+    //public float speed = 1f;
 
     //private SpriteRenderer mySpriteRenderer;
     private UISprite myUiSprite; //출력될 숫자이미지
@@ -36,7 +36,6 @@ public class NumberTile : MonoBehaviour {
     //비활성과 동시에 초기화
     void OnDisable()
     {
-        GridManager.Instance.SetNumberTiles(this, false); //나를 목록에서 지운다
         //this.numberLevel = -1; //일단 첫번째 등급이 아니게 처리..
         this.numberLevel = global::NumberLevel.NONE;
         //this.mySpriteRenderer.sprite = null;
@@ -205,7 +204,7 @@ public class NumberTile : MonoBehaviour {
                     Vector2 currPos = this.transform.position;
                     //일정 속도로 목적지를 가기
                     float next_x =
-                        Mathf.MoveTowards(currPos.x, this.goalTile.MyPos.x, this.speed * Time.deltaTime);
+                        Mathf.MoveTowards(currPos.x, this.goalTile.MyPos.x, GridManager.Instance.tileMoveSpeed * Time.deltaTime);
                     //print(next_x.ToString());
                     this.transform.position = new Vector2(next_x, currPos.y);
                     yield return null;
@@ -222,7 +221,7 @@ public class NumberTile : MonoBehaviour {
                 {
                     Vector2 currPos = this.transform.position;
                     float next_y =
-                        Mathf.MoveTowards(currPos.y, this.goalTile.MyPos.y, this.speed * Time.deltaTime);
+                        Mathf.MoveTowards(currPos.y, this.goalTile.MyPos.y, GridManager.Instance.tileMoveSpeed * Time.deltaTime);
                     this.transform.position = new Vector2(currPos.x, next_y);
                     yield return null;
                 }
@@ -233,7 +232,7 @@ public class NumberTile : MonoBehaviour {
         {
             this.goalTile.UpdateSprite(); //목적지 숫자 갱신
             this.gameObject.SetActive(false); //비활성화하기
-            //GridManager.Instance.SetTileList(this.currentTile, false); //원래 연결했었던 타일 비활성화하기
+            GridManager.Instance.SetNumberTiles(this, false); //나를 목록에서 지운다
         }
         else //단순 이동이라면..
         {

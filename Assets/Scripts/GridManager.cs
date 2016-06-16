@@ -18,6 +18,7 @@ public class GridManager : MonoBehaviour {
     //public float cellSpacing = 0.5f;
     public BackTile standardTile; //[0,0]가 되는 기준 타일 가져오기
     public GameObject SpriteTilesGameObject; //미리 만들어진 풀링숫자타일객체의 부모게임오브젝트 가져오기
+    public float tileMoveSpeed = 1f;
 
     //임시처리. 후에 xml데이터로 처리하시오
     //public SpriteRenderer[] numberSrcImgs;
@@ -219,7 +220,9 @@ public class GridManager : MonoBehaviour {
         foreach(NumberTile tempTile in this.numberTiles)
         {
             //this.emptyTiles.Add(tempTile.CurrentTile); //연결되어 있는 백타일을 비활성화 목록에 추가 - 숫자타일 비활성화시 자동으로 추가해준다.
-            tempTile.gameObject.SetActive(false); //숫자타일객체를 비활성화
+            //tempTile.gameObject.SetActive(false); //숫자타일객체를 비활성화
+            this.emptyTiles.Add(tempTile.CurrentTile);
+            tempTile.CurrentTile.DisconnectNumberTile(true);
         }
         this.numberTiles.Clear(); //모든 작업이 완료되면 활성화목록 모두 비우기
     }
