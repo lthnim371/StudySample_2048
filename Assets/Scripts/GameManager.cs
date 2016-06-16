@@ -94,13 +94,13 @@ public class GameManager : MonoBehaviour {
                 }
 
                 //무언가 눌렀다면 스테이트 변경
-                this.state = State.CheckingMatches;                
-
-                break;
-            case State.CheckingMatches:
+                this.state = State.CheckingMatches;
                 //이동하자
                 GridManager.Instance.MoveTile(this.inputDirection);
-
+                break;
+            case State.CheckingMatches:
+                if (GridManager.Instance.TileMoving() == true)
+                    return;
                 GridManager.Instance.AddNewNumberTile();
                 if (GridManager.Instance.IsGameOver() == true)
                     this.state = State.GameOver;

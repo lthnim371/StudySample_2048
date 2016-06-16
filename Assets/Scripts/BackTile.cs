@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EmptyTile : MonoBehaviour {
+public class BackTile : MonoBehaviour {
 
     private int index_x;
     private int index_y;
@@ -75,7 +75,7 @@ public class EmptyTile : MonoBehaviour {
         //이미 연결된 숫자가 있다면 문제인거다..
         if (this.linkNumberTile != null)
         {
-            print("연결된 숫자스프라이트가 이미 존재한다");
+            print("연결된 숫자타일이 이미 존재한다");
             return false;
         }
         //풀링객체를 가져온다.
@@ -85,8 +85,8 @@ public class EmptyTile : MonoBehaviour {
         if (this.linkNumberTile == null)
             return false;
 
-        this.linkNumberTile.CurrentTile = this;
-        this.linkNumberTile.ChangeNumber(numberLevel, true); //스프라이트를 변경한다.
+        this.linkNumberTile.CurrentTile = this; //숫자타일에 자기를 기억하게 한다.
+        this.linkNumberTile.ChangeNumber(numberLevel, true); //스프라이트를 바로 변경한다.
         return true;
     }
 
@@ -106,9 +106,9 @@ public class EmptyTile : MonoBehaviour {
 
     //업그레이드 예약
     //public void ChangeNumberLevel(NumberLevel numberLevel)
-    public void ReserveUpgrade(NumberLevel numberLevel, NumberTile targetNumberTile)
+    public void ReserveUpgrade(NumberTile targetNumberTile)
     {
-        this.linkNumberTile.ChangeNumber(numberLevel, false); //일단 정보만 수정해놓기
+        this.linkNumberTile.ChangeNumber(this.linkNumberTile.NumberLevel + 1, false); //일단 정보만 수정해놓기
         targetNumberTile.SetGoal(this, true); //합쳐질 숫자타일에 내 위치를 전달
     }
 
@@ -116,12 +116,7 @@ public class EmptyTile : MonoBehaviour {
     //public void ChangeNumberTile()
     public void ConnectNumberTile(NumberTile targetNumberTile)
     {
-        this.linkNumberTile = targetNumberTile; //숫자타일 갱신
-        this.linkNumberTile.SetGoal(this, false); //숫자타일 갱신되었으므로 내 위치 알려주기
-    }
-
-    public void NowMove(InputDirection inputDir)
-    {
-        this.linkNumberTile.NowMove(inputDir);
+        this.linkNumberTile = targetNumberTile; //숫자타일 새로 연결하기
+        this.linkNumberTile.SetGoal(this, false); //숫자타일 연결되었으므로 내 위치 알려주기
     }
 }

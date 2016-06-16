@@ -163,7 +163,7 @@
      <Compile Include="Assets\NGUI\Scripts\UI\UITiledSprite.cs" />
      <Compile Include="Assets\NGUI\Scripts\UI\UITooltip.cs" />
      <Compile Include="Assets\NGUI\Scripts\UI\UIViewport.cs" />
-     <Compile Include="Assets\Scripts\EmptyTile.cs" />
+     <Compile Include="Assets\Scripts\BackTile.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\GameObjectPool.cs" />
      <Compile Include="Assets\Scripts\GameObjectPoolManager.cs" />
