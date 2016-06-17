@@ -228,8 +228,11 @@ public class GridManager : MonoBehaviour {
     }
 
     //이동키에 따른 정보 전달
-    public void ReadyMove(InputDirection inputDirection)
+    public State ReadyMove(InputDirection inputDirection)
     {
+        if (inputDirection == InputDirection.NONE) //입력키가 없으면
+            return State.WaitingForInput; //다시 대기모드로 돌아간다
+
         //일단 임시로 모든 셀이 활성화되어있다면 입력 받지 않기...추후에 변경 바람
         //if (this.inactiveTiles.Count <= 0)
         //{
@@ -323,7 +326,11 @@ public class GridManager : MonoBehaviour {
                     }//for j
                 }//for i
                 break;
-        }
+        }//switch
+
+        //여기까지 오면 무사히 이동준비를 마친거다.
+        this.MoveTile(inputDirection); //입력키가 있으므로 타일을 이동시키자
+        return State.CheckingMatches; //게임결과 체크로 넘어가자
     }
 
     public bool IsGameOver()
@@ -415,8 +422,14 @@ public class GridManager : MonoBehaviour {
     }
 
     //숫자타일들을 이동시켜라
-    public void MoveTile(InputDirection inputDir)
+    private void MoveTile(InputDirection inputDir)
     {
+        if (inputDir == InputDirection.NONE)
+        {
+            print("입력한게 없는데 호출되었다");
+            return;
+        }
+
         foreach (NumberTile numberTile in this.numberTiles)
         {
             numberTile.NowMove(inputDir);

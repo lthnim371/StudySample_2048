@@ -231,8 +231,9 @@ public class NumberTile : MonoBehaviour {
         if (this.isUpgrade == true) //업그레이드라면..
         {
             this.goalTile.UpdateSprite(); //목적지 숫자 갱신
-            this.gameObject.SetActive(false); //비활성화하기
             GridManager.Instance.SetNumberTiles(this, false); //나를 목록에서 지운다
+            ScoreManager.Instance.AddScore(this.goalTile.LinkNumberTile.NumberLevel);
+            this.gameObject.SetActive(false); //비활성화하기
         }
         else //단순 이동이라면..
         {

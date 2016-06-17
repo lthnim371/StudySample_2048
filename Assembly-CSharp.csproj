@@ -168,6 +168,7 @@
      <Compile Include="Assets\Scripts\GameObjectPool.cs" />
      <Compile Include="Assets\Scripts\GameObjectPoolManager.cs" />
      <Compile Include="Assets\Scripts\GridManager.cs" />
+     <Compile Include="Assets\Scripts\InputTouch.cs" />
      <Compile Include="Assets\Scripts\NumberTile.cs" />
      <Compile Include="Assets\Scripts\ScoreManager.cs" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Depth Cutout.shader" />
