@@ -17,6 +17,32 @@ public enum NumberLevel
     NONE, _2, _4, _8, _16, _32, _64, _128, _256, _512, _1024, _2048
 }
 
+public static class SimpleMath
+{
+    public static int NaturalNumberPow(int naturalNumber, int multiplier)
+    {
+        int result = 1;
+        for (int i = 0; i < multiplier; i++)
+            result *= naturalNumber;
+        return result;
+    }
+
+    public static int AbsoluteValue(int integer)
+    {
+        if (integer < 0)
+            return -integer;
+        else
+            return integer;
+    }
+    public static float AbsoluteValue(float realNumber)
+    {
+        if (realNumber < 0)
+            return -realNumber;
+        else
+            return realNumber;
+    }
+}
+
 [RequireComponent( typeof(InputTouch ))]
 public class GameManager : MonoBehaviour {
 
@@ -38,6 +64,7 @@ public class GameManager : MonoBehaviour {
     private State state = State.Loaded;
     //private InputDirection inputDirection = InputDirection.NONE;
     private InputTouch inputTouch;
+    private bool paused = false;
 
     void Awake()
     {
@@ -47,17 +74,14 @@ public class GameManager : MonoBehaviour {
         Screen.SetResolution(Screen.width, (int)((Screen.width * 0.5f) * 3), true);
     }
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-
     // Update is called once per frame
     void Update() {
 
         //일단 뒤로가기키로 게임종료한다. 추후에 바로 종료 안되게 설정해도 된다.
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
+        else if (this.paused == true) //일단 홈키로 어플밖으로 나갔을때는 입력 안 받도록 하자. 추후 타임오버 등을 고려할 때 변경해야될듯..
+            return;
 
         switch (this.state)
         {
@@ -126,6 +150,11 @@ public class GameManager : MonoBehaviour {
         }//switch
 
 	}//Update
+
+    void OnApplicationPause(bool pause)
+    {
+        this.paused = pause;
+    }
     
     //리셋버튼 클릭시 초기화
     public void ResetGame()

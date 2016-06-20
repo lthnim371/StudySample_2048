@@ -16,17 +16,15 @@ public class BackTile : MonoBehaviour {
     }
 
     // Use this for initialization
-    void Start() {
+    //void Start() {
+    //    Ray2D ray = new Ray2D(this.transform.position, Vector2.up);
+    //    RaycastHit2D hit;
 
-        /*Ray2D ray = new Ray2D(this.transform.position, Vector2.up);
-        RaycastHit2D hit;
-
-        if (this.UpTile == null)
-        {
-            hit = Physics2D.Raycast()
-        }*/
-
-    }
+    //    if (this.UpTile == null)
+    //    {
+    //        hit = Physics2D.Raycast()
+    //    }
+    //}
 
     public int Index_X
     {

@@ -200,7 +200,7 @@ public class GridManager : MonoBehaviour {
             //빈타일목록에 없다면..
             if (this.numberTiles.Contains(numberTile) == false)
                 this.numberTiles.Add(numberTile); //빈타일목록에 추가               
-            else //문제가 있는거다..
+            else //문제가 있는거다..-> 딱히 문제될게 없는것같음
                 print("추가 대상이 목록에 이미 있다.");
         }
         else //위와 반대
@@ -217,12 +217,17 @@ public class GridManager : MonoBehaviour {
     public void Reset()
     {
         //활성화목록을 돌면서 
-        foreach(NumberTile tempTile in this.numberTiles)
+        //foreach (NumberTile tempTile in this.numberTiles)
+        //{
+        //    this.SetEmptyTiles(tempTile.CurrentTile, true); //연결되어 있는 백타일을 비활성화 목록에 추가
+        //    tempTile.CurrentTile.DisconnectNumberTile(); //백타일에 연결된 숫자타일들 연결끊기
+        //    tempTile.gameObject.SetActive(false); //숫자타일객체를 비활성화
+        //}
+        for (int i = 0; i < this.numberTiles.Count; i++)
         {
-            //this.emptyTiles.Add(tempTile.CurrentTile); //연결되어 있는 백타일을 비활성화 목록에 추가 - 숫자타일 비활성화시 자동으로 추가해준다.
-            //tempTile.gameObject.SetActive(false); //숫자타일객체를 비활성화
-            this.emptyTiles.Add(tempTile.CurrentTile);
-            tempTile.CurrentTile.DisconnectNumberTile(true);
+            this.SetEmptyTiles(this.numberTiles[i].CurrentTile, true);
+            this.numberTiles[i].CurrentTile.DisconnectNumberTile();
+            this.numberTiles[i].gameObject.SetActive(false);
         }
         this.numberTiles.Clear(); //모든 작업이 완료되면 활성화목록 모두 비우기
     }
@@ -233,6 +238,7 @@ public class GridManager : MonoBehaviour {
         if (inputDirection == InputDirection.NONE) //입력키가 없으면
             return State.WaitingForInput; //다시 대기모드로 돌아간다
 
+        bool unableMove = true;
         //일단 임시로 모든 셀이 활성화되어있다면 입력 받지 않기...추후에 변경 바람
         //if (this.inactiveTiles.Count <= 0)
         //{
@@ -256,7 +262,7 @@ public class GridManager : MonoBehaviour {
                             //if (this.allTiles[i, j + k].LinkNumberTile != null) //다음 열에 숫자타일이 존재한다면..
                             {
                                 //업그레이드 파악이었다면 기준 타일을 다음 타일로 하기(이동이면 그 다음 열로 변경하여 계속 검사)
-                                if (this.UpgradeOrMove(tempTile, this.allTiles[i, j + k]) == true)
+                                if (this.UpgradeOrMove(tempTile, this.allTiles[i, j + k], ref unableMove) == true)
                                     break;
                             }
                         }//for k
@@ -277,7 +283,7 @@ public class GridManager : MonoBehaviour {
                         {
                             //if (this.allTiles[i, j - k].LinkNumberTile != null)
                             {
-                                if (this.UpgradeOrMove(tempTile, this.allTiles[i, j - k]) == true)
+                                if (this.UpgradeOrMove(tempTile, this.allTiles[i, j - k], ref unableMove) == true)
                                     break;
                             }
                         }//for k
@@ -298,7 +304,7 @@ public class GridManager : MonoBehaviour {
                         {
                             //if (this.allTiles[j + k, i].LinkNumberTile != null)
                             {
-                                if (this.UpgradeOrMove(tempTile, this.allTiles[j + k, i]) == true)
+                                if (this.UpgradeOrMove(tempTile, this.allTiles[j + k, i], ref unableMove) == true)
                                     break;
                             }
                         }//for k
@@ -319,7 +325,7 @@ public class GridManager : MonoBehaviour {
                         {
                             //if (this.allTiles[j - k, i].LinkNumberTile != null)
                             {
-                                if (this.UpgradeOrMove(tempTile, this.allTiles[j - k, i]) == true)
+                                if (this.UpgradeOrMove(tempTile, this.allTiles[j - k, i], ref unableMove) == true)
                                     break;
                             }
                         }//for k
@@ -327,6 +333,9 @@ public class GridManager : MonoBehaviour {
                 }//for i
                 break;
         }//switch
+
+        if (unableMove == true) //다 확인해보았지만 하나라도 움직일 수 없다면
+            return State.WaitingForInput; //다시 입력 상태로 돌아간다.
 
         //여기까지 오면 무사히 이동준비를 마친거다.
         this.MoveTile(inputDirection); //입력키가 있으므로 타일을 이동시키자
@@ -371,7 +380,7 @@ public class GridManager : MonoBehaviour {
     }
 
     //true이면 업그레이드 여부 확인한거고 false이면 그냥 이동 여부 확인한것
-    private bool UpgradeOrMove(BackTile sourTile, BackTile destTile)
+    private bool UpgradeOrMove(BackTile sourTile, BackTile destTile, ref bool unableMove)
     {
         //print(string.Format("sourName:{0} , destName:{1}", sourTile.name, destTile.name));
 
@@ -396,6 +405,7 @@ public class GridManager : MonoBehaviour {
                 sourTile.ReserveUpgrade(destTile.LinkNumberTile);
                 destTile.DisconnectNumberTile(); //원래 주인 백타일은 연결을 끊는다
                 this.SetEmptyTiles(destTile, true); //비활성화 목록 추가
+                unableMove = false; //단 하나라도 움직일 수 있다.
 
                 //스코어매니저에 전달
                 //ScoreManager.Instance.AddScore(sourTile.LinkNumberSprite.NumberLevel);
@@ -416,6 +426,7 @@ public class GridManager : MonoBehaviour {
             destTile.DisconnectNumberTile(); //이동할려는 숫자타일의 원래 주인 백타일 연결 끊기
             this.SetEmptyTiles(sourTile, false); //기준 백타일은 목록에서 제거
             this.SetEmptyTiles(destTile, true); //비교 타일은 비활성화 목록 추가
+            unableMove = false; //단 하나라도 움직일 수 있다.
 
             return false;
         }
@@ -430,21 +441,22 @@ public class GridManager : MonoBehaviour {
             return;
         }
 
-        foreach (NumberTile numberTile in this.numberTiles)
-        {
-            numberTile.NowMove(inputDir);
-        }
+        //foreach (NumberTile numberTile in this.numberTiles)
+        //    numberTile.NowMove(inputDir);
+        for (int i = 0; i < this.numberTiles.Count; i++)
+            this.numberTiles[i].NowMove(inputDir);
     }
 
     //숫자타일들이 움직이는지 확인
     public bool TileMoving()
     {
         //활성화 숫자타일들을 순회하며
-        foreach(NumberTile numberTile in this.numberTiles)
-        {
-            if (numberTile.IsMove == true) //하나라도 움직이고 있다면..
+        //foreach(NumberTile numberTile in this.numberTiles)
+        //    if (numberTile.IsMove == true) //하나라도 움직이고 있다면..
+        //        return true;
+        for (int i = 0; i < this.numberTiles.Count; i++)
+            if (this.numberTiles[i].IsMove)
                 return true;
-        }
 
         return false;
     }

@@ -5,6 +5,8 @@ using System.Collections;
 public class NumberTile : MonoBehaviour {
 
     //public float speed = 1f;
+    public Vector2[] newAddScaleEffect = { new Vector2(0.25f, 0.25f), new Vector2(1f, 1f) };
+    public Vector2[] upgradeScaleEffect = { new Vector2(1f, 1f), new Vector2(1.5f, 1.5f) };
 
     //private SpriteRenderer mySpriteRenderer;
     private UISprite myUiSprite; //출력될 숫자이미지
@@ -16,6 +18,7 @@ public class NumberTile : MonoBehaviour {
     private bool isUpgrade; //업그레이드와 단순 이동 중 판단에 이용
     private bool isMove = false;
     private InputDirection currInputDirection = InputDirection.NONE;
+    private TweenScale myTweenScale;
 
     void Awake()
     {
@@ -23,6 +26,7 @@ public class NumberTile : MonoBehaviour {
         this.myUiSprite = this.GetComponent<UISprite>();
 
         //this.myColliderBounds = this.GetComponent<BoxCollider2D>().bounds;
+        this.myTweenScale = this.GetComponent<TweenScale>();
     }
 
     //void Update()
@@ -96,6 +100,22 @@ public class NumberTile : MonoBehaviour {
         }
 
         this.myUiSprite.spriteName = this.numberLevel.ToString().Substring(1);
+        if (this.numberLevel == NumberLevel._2)
+        {
+            this.myTweenScale.from = this.newAddScaleEffect[0];
+            this.myTweenScale.to = this.newAddScaleEffect[1];
+            this.myTweenScale.animationCurve.MoveKey(1, new Keyframe(0.5f, 0.5f));
+            this.myTweenScale.animationCurve.MoveKey(2, new Keyframe(1f, 1f));
+        }
+        else
+        {
+            this.myTweenScale.from = this.upgradeScaleEffect[0];
+            this.myTweenScale.to = this.upgradeScaleEffect[1];
+            this.myTweenScale.animationCurve.MoveKey(1, new Keyframe(0.5f, 1f));
+            this.myTweenScale.animationCurve.MoveKey(2, new Keyframe(1f, 0f));
+        }
+        this.myTweenScale.Reset();
+        this.myTweenScale.Play(true);
     }
 
     //이동할 목적지 설정
@@ -103,6 +123,8 @@ public class NumberTile : MonoBehaviour {
     {
         this.goalTile = goalTile;
         this.isUpgrade = isUpgrade;
+        if (this.isUpgrade == false) //단순이동이라면
+            this.currentTile = this.goalTile; //현재타일도 빠르게 바꿔주자(리셋 버그 때문에..)
     }
 
     //이동을 시작해라
@@ -199,7 +221,8 @@ public class NumberTile : MonoBehaviour {
                 else //단순 이동이면 중심지까지 접근
                     colSpacing = GridManager.Instance.StandardColliderBounds.extents.x;
                 //목적지 좌표와 내 좌표와의 거리를 판단하여 반복 및 중단 결정
-                while (Mathf.Abs(this.goalTile.MyPos.x - this.transform.position.x) > colSpacing)
+                //while (Mathf.Abs(this.goalTile.MyPos.x - this.transform.position.x) > colSpacing)
+                while (SimpleMath.AbsoluteValue(this.goalTile.MyPos.x - this.transform.position.x) > colSpacing)
                 {
                     Vector2 currPos = this.transform.position;
                     //일정 속도로 목적지를 가기
@@ -217,7 +240,8 @@ public class NumberTile : MonoBehaviour {
                     colSpacing = GridManager.Instance.StandardColliderBounds.size.y;
                 else
                     colSpacing = GridManager.Instance.StandardColliderBounds.extents.y;
-                while (Mathf.Abs(this.goalTile.MyPos.y - this.transform.position.y) > colSpacing)
+                //while (Mathf.Abs(this.goalTile.MyPos.y - this.transform.position.y) > colSpacing)
+                while (SimpleMath.AbsoluteValue(this.goalTile.MyPos.y - this.transform.position.y) > colSpacing)
                 {
                     Vector2 currPos = this.transform.position;
                     float next_y =
@@ -239,7 +263,7 @@ public class NumberTile : MonoBehaviour {
         {
             //print(string.Format("myName:{0} , goalName:{1}", this.name, goalTile.name));
             this.transform.position = goalTile.MyPos; //위치 맞추기
-            this.currentTile = this.goalTile; //나와 연결된 타일 기억하기
+            //this.currentTile = this.goalTile; //나와 연결된 타일 기억하기 - 이동 중 리셋하면 버그가 생기므로 일단 잠가둔다.
             //GridManager.Instance.SetTileList(this.currentTile, true); //연결 타일 활성화시키기
         }
 

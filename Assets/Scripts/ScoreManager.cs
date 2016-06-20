@@ -18,16 +18,16 @@ public class ScoreManager : MonoBehaviour {
         }
     }
 
-    public UILabel bestScoreLabel;
-    public UILabel currentScoreLabel;
-    public UILabel gameOverLabel;
+    public UILabel bestScoreLabel; //최고점수 라벨
+    public UILabel currentScoreLabel; //진행점수 라벨
+    public UILabel gameOverLabel; //출력될 게임오버 라벨
     //private string scoreText = "Score";
-    private int currentScore = 0;
-    private int bestScore = 0;
+    private int currentScore = 0; //보관될 진행점수
+    private int bestScore = 0; //보관될 최고점수
 
     void Awake()
     {
-        sInstance = this;
+        sInstance = this; //싱글톤화
 
         /* 추후에 씬뷰에 미리 생성 없이 사용시 해제 바람
         GameObject findGameObj = GameObject.FindGameObjectWithTag("UI");
@@ -48,10 +48,13 @@ public class ScoreManager : MonoBehaviour {
         this.GameOverLabel.gameObject.SetActive(false);
         */
 
-        if (this.bestScoreLabel == null || this.currentScoreLabel == null)
-            print("점수 라벨을 물려놓지 않았다.");
+        if (this.bestScoreLabel == null || this.currentScoreLabel == null || this.gameOverLabel == null)
+            print("라벨을 물려놓지 않았다.");
 
-        this.gameOverLabel.gameObject.SetActive(false);
+        this.gameOverLabel.gameObject.SetActive(false); //게임오버라벨 숨기기
+
+        if (PlayerPrefs.HasKey("BestScore") == true) //불러올 최고점수 저장데이터가 있다면..
+            this.bestScore = PlayerPrefs.GetInt("BestScore"); //최고점수 가져오기
     }
 
 	// Use this for initialization
@@ -62,6 +65,15 @@ public class ScoreManager : MonoBehaviour {
         //  string.Format("{0} : {1}", this.scoreText, this.currentScore);
         this.currentScoreLabel.text = "0";
         this.bestScoreLabel.text = this.bestScore.ToString();
+    }
+
+    void OnApplicationQuit() //어플이 종료될 때
+    {
+        //혹시 모르니 최고점수갱신해보기
+        this.ChangeScore();
+        //최고점수 저장하기
+        PlayerPrefs.SetInt("BestScore", this.bestScore);
+        PlayerPrefs.Save();
     }
 	
     //현재 점수에 점수 추가하기
@@ -74,7 +86,9 @@ public class ScoreManager : MonoBehaviour {
         else
         {
             //그냥 2의 제곱값으로 점수 추가하기...
-            int newScore = (int)Mathf.Pow(2, (float)numberLevel + 1);
+            //int newScore = (int)Mathf.Pow(2, (float)numberLevel);
+            int newScore = SimpleMath.NaturalNumberPow(2, (int)numberLevel);
+
             this.currentScore += newScore;
         }
 

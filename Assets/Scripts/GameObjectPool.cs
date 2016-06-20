@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class GameObjectPool : MonoBehaviour {
 
@@ -11,9 +12,11 @@ public class GameObjectPool : MonoBehaviour {
     public bool ReadyPool(string upperPath, string objectName, int poolNum)
     {
         this.poolNum = poolNum;
-
-        this.srcGameObject = Resources.Load(
-            string.Format("{0}/{1}", upperPath, objectName)) as GameObject;
+        StringBuilder strBldr = new StringBuilder(upperPath);
+        strBldr.Append(objectName);
+        this.srcGameObject = Resources.Load(strBldr.ToString()) as GameObject;
+            //string.Format("{0}/{1}", upperPath, objectName)) as GameObject;
+            
         if (this.srcGameObject == null)
         {
             Debug.Log("Not Found SrcGameObject");
