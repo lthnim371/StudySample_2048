@@ -12,14 +12,15 @@ public class GameObjectPool : MonoBehaviour {
     public bool ReadyPool(string upperPath, string objectName, int poolNum)
     {
         this.poolNum = poolNum;
-        StringBuilder strBldr = new StringBuilder(upperPath);
-        strBldr.Append(objectName);
-        this.srcGameObject = Resources.Load(strBldr.ToString()) as GameObject;
-            //string.Format("{0}/{1}", upperPath, objectName)) as GameObject;
+
+        this.srcGameObject = Resources.Load(
+            string.Format("{0}/{1}", upperPath, objectName)) as GameObject;
             
         if (this.srcGameObject == null)
         {
-            Debug.Log("Not Found SrcGameObject");
+#if SHOW_DEBUG_MESSAGES
+            print("Not Found SrcGameObject");
+#endif
             return false;
         }
 
@@ -56,7 +57,9 @@ public class GameObjectPool : MonoBehaviour {
             //모든 풀을 검사하였지만 전부 다 활성화 상태이다..
             if (len <= 0)
             {
+#if SHOW_DEBUG_MESSAGES
                 print("모든 풀이 활성화 상태이다.");
+#endif
                 return null;
             }
             --len;
@@ -80,7 +83,9 @@ public class GameObjectPool : MonoBehaviour {
         Transform[] tempTMs = parentGameObj.GetComponentsInChildren<Transform>();
         if (tempTMs.Length <= 1)
         {
+#if SHOW_DEBUG_MESSAGES
             print("요청한 게임오브젝트의 하위자식들이 존재하지 않는다");
+#endif
             return false;
         }
 

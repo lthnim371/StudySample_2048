@@ -44,14 +44,10 @@ public class GridManager : MonoBehaviour {
 
         //_imageNumber.atlas = _numberSrcImgs;
         //_imageNumber.spriteName = "2048";
-        //Debug.Log(_imageNumber.spriteName);
+        //Print(_imageNumber.spriteName);
 
         BoxCollider2D boxCol = this.standardTile.GetComponent<BoxCollider2D>();
         this.standardColliderBounds = boxCol.bounds;
-    }
-
-    // Use this for initialization
-    void Start() {
 
         ////모든 그리드 셀의 위치를 확보하기(좌측상단부터 우측하단방향으로)
         //for (int i = 0; i < this.row; i++)
@@ -71,6 +67,8 @@ public class GridManager : MonoBehaviour {
         //ex) [0,0] [0,1] [0,2]...우측방향의 타일들 //[0,0] [1,0] [2,0]...아래측방향의 타일들
         this.allTiles[0, 0] = this.standardTile;
         this.emptyTiles.Add(this.allTiles[0, 0]);
+        this.allTiles[0, 0].Index_X = 0;
+        this.allTiles[0, 0].Index_Y = 0;
         //print(string.Format("{0}max , {1}size , {2}extents , {3}center",
         //  col.bounds.max, col.bounds.size, col.bounds.extents, col.bounds.center));
         for (int i = 0; i < this.row; i++)
@@ -101,7 +99,7 @@ public class GridManager : MonoBehaviour {
             if (findTile == null) //현재가 맨 아래 타일이라면
                 continue;
             this.allTiles[temp_i, 0] = findTile; //다음 행을 가리키는 인덱스에 보관
-            this.allTiles[temp_i, 0].Index_X = i;
+            this.allTiles[temp_i, 0].Index_X = temp_i;
             this.allTiles[temp_i, 0].Index_Y = 0;
             this.emptyTiles.Add(this.allTiles[temp_i, 0]);
         }
@@ -144,18 +142,22 @@ public class GridManager : MonoBehaviour {
             //print(string.Format("{0}pos , {1}pos", ray.origin, hit.transform.position));
             return hit.collider.gameObject.GetComponent<BackTile>();
         }
+#if SHOW_DEBUG_MESSAGES
         print("그리드셀을 찾을수가 없다");
+#endif
         return null;
     }
 
     //랜덤으로 빈 셀을 뽑아 새로운 숫자 투입
-    public void AddNewNumberTile()
+    public void AddNewNumberTile(NumberLevel numberLevel = NumberLevel._2)
     {
         //일단 임시로 모든 셀이 활성화되어있다면 입력 받지 않기...추후에 변경 바람
         //if (this.inactiveTiles.Count <= 0)
         if(this.numberTiles.Count >= this.allTiles.Length)
         {
+#if SHOW_DEBUG_MESSAGES
             print("새로 추가하려했지만 모든 셀 활성화되었음");
+#endif
             return;
         }
 
@@ -163,7 +165,7 @@ public class GridManager : MonoBehaviour {
         //int rand_y = Random.Range(0, this.column);
         int randNum = Random.Range(0, this.emptyTiles.Count); //현재 빈타일 갯수 내에서 랜덤 숫자 뽑기
         //해당 랜덤인덱스로 기본숫자타일을 정상적으로 추가하였다면
-        if (this.emptyTiles[randNum].AddNumberSprite(NumberLevel._2) == true)
+        if (this.emptyTiles[randNum].AddNumberSprite(numberLevel) == true)
         {
             this.SetNumberTiles(this.emptyTiles[randNum].LinkNumberTile, true); //활성화숫자타일목록에 추가
             this.SetEmptyTiles(this.emptyTiles[randNum], false); //빈타일리스트에서는 제거
@@ -179,16 +181,20 @@ public class GridManager : MonoBehaviour {
             //빈타일목록에 없다면..
             if (this.emptyTiles.Contains(backTile) == false)
                 this.emptyTiles.Add(backTile); //빈타일목록에 추가               
+#if SHOW_DEBUG_MESSAGES
             else //문제가 있는거다..
                 print("추가 대상이 목록에 이미 있다.");
+#endif
         }
         else //위와 반대
         {
             //빈타일목록에 있다면
             if (this.emptyTiles.Contains(backTile) == true)
                 this.emptyTiles.Remove(backTile);
+#if SHOW_DEBUG_MESSAGES
             else
                 print("제거 대상이 목록에 없다.");
+#endif
         }
     }
 
@@ -200,16 +206,20 @@ public class GridManager : MonoBehaviour {
             //빈타일목록에 없다면..
             if (this.numberTiles.Contains(numberTile) == false)
                 this.numberTiles.Add(numberTile); //빈타일목록에 추가               
+#if SHOW_DEBUG_MESSAGES
             else //문제가 있는거다..-> 딱히 문제될게 없는것같음
                 print("추가 대상이 목록에 이미 있다.");
+#endif
         }
         else //위와 반대
         {
             //빈타일목록에 있다면
             if (this.numberTiles.Contains(numberTile) == true)
                 this.numberTiles.Remove(numberTile);
+#if SHOW_DEBUG_MESSAGES
             else
                 print("제거 대상이 목록에 없다.");
+#endif
         }
     }
     
@@ -342,15 +352,17 @@ public class GridManager : MonoBehaviour {
         return State.CheckingMatches; //게임결과 체크로 넘어가자
     }
 
-    public bool IsGameOver()
+    public State CheckGameEnd()
     {
         //활성화 칸이 아직 다 차지 않았다면 그냥 검사 패스
         if (this.numberTiles.Count < this.allTiles.Length)
         {
             //if(test == true)
             //print(string.Format("activeTiles.Count:{0} , allTiles.Length:{1}", activeTiles.Count, allTiles.Length));
-            return false;
+            return State.WaitingForInput;
         }
+
+        bool allMaxNumber = false; //올클리어인지 확인을 위한 용도
 
         for (int i = 0; i < this.row; i++)
         {
@@ -359,24 +371,104 @@ public class GridManager : MonoBehaviour {
                 //현재 검사 기준 타일셀 숫자와 우측 및 아래측 타일셀 숫자와 비교하여 등급 동일하면 패스
                 //int currTileNumLev = this.allTiles[i, j].LinkNumberSprite.NumberLevel;
                 NumberLevel currTileNumLev = this.allTiles[i, j].LinkNumberTile.NumberLevel;
+                if (currTileNumLev == NumberLevel._2048) //최대등급이라면 검사할 필요없음
+                    continue;
 
+                allMaxNumber = false; //여기로 오면 올클리어는 실패임
+
+                //다음 열과 동급인지 확인
                 if (j + 1 < this.column &&
                     currTileNumLev == this.allTiles[i, j + 1].LinkNumberTile.NumberLevel)
                 {
                     //print(string.Format("sour:{0} , dest:{1}", currTileNumLev, this.allTiles[i, j + 1].LinkNumberSprite.NumberLevel));
-                    return false;
+                    return State.WaitingForInput;
                 }
+                //다음 행과 동급인지 확인
                 if (i + 1 < this.row &&
                     currTileNumLev == this.allTiles[i + 1, j].LinkNumberTile.NumberLevel)
                 {
                     //print(string.Format("sour:{0} , dest:{1}", currTileNumLev, this.allTiles[i + 1, j].LinkNumberSprite.NumberLevel));
-                    return false;
+                    return State.WaitingForInput;
                 }
             }
         }
         //모두 검사해보았지만 도저히 합쳐질만한 요소 없음
-        print("게임오버");
-        return true;
+        //올클리어 여부 확인하여 반환값 결정
+        return allMaxNumber == true ? State.Perfect : State.GameOver;
+    }
+                
+    //숫자타일들이 움직이는지 확인
+    public bool TileMoving()
+    {
+        //활성화 숫자타일들을 순회하며
+        //foreach(NumberTile numberTile in this.numberTiles)
+        //    if (numberTile.IsMove == true) //하나라도 움직이고 있다면..
+        //        return true;
+        for (int i = 0; i < this.numberTiles.Count; i++)
+            if (this.numberTiles[i].IsMove)
+                return true;
+
+        return false;
+    }
+
+    public void SaveCurrentInfo()
+    {
+        //List<sSaveInfo> saveInfoList = new List<sSaveInfo>();
+        cSaveInfo saveInfos = new cSaveInfo(this.numberTiles.Count);
+        //saveInfos.saveInfoArray = new sSaveInfo[this.numberTiles.Count];
+        for (int i = 0; i < this.numberTiles.Count; i++)
+        {
+            //if (this.numberTiles[i].CurrentTile.Equals(null))
+            //    continue;
+
+            //sSaveInfo newSaveInfo = new sSaveInfo(
+            //saveInfos.saveInfoArray[i] = new sSaveInfo(
+            //    this.numberTiles[i].CurrentTile.Index_X,
+            //    this.numberTiles[i].CurrentTile.Index_Y,
+            //    this.numberTiles[i].NumberLevel);
+
+            //saveInfoList.Add(newSaveInfo);
+
+            saveInfos.tileIndex_x[i] = this.numberTiles[i].CurrentTile.Index_X;
+            saveInfos.tileIndex_y[i] = this.numberTiles[i].CurrentTile.Index_Y;
+            saveInfos.numberLevel[i] = this.numberTiles[i].NumberLevel;
+        }
+        //cSaveInfo saveInfos = new cSaveInfo(saveInfoList.ToArray());
+        string strJson = JsonUtility.ToJson(saveInfos);
+        PlayerPrefs.SetString("SaveInfos", strJson);
+        PlayerPrefs.Save();
+        //print("마지막 위치 정보 갯수 : " + saveInfoList.Count);
+    }
+
+    public bool LoadLastInfo()
+    {
+        if (PlayerPrefs.HasKey("SaveInfos"))
+        {
+            cSaveInfo loadInfos =
+                JsonUtility.FromJson<cSaveInfo>(PlayerPrefs.GetString("SaveInfos"));
+            if (loadInfos == null || loadInfos.tileIndex_x == null ||
+                loadInfos.tileIndex_y == null || loadInfos.numberLevel == null)
+            {
+#if SHOW_DEBUG_MESSAGES
+                print("Fail PlayerPrefs Json Load");
+#endif
+                return false;
+            }
+
+            for (int i = 0; i < loadInfos.tileIndex_x.Length; i++)
+            {
+                this.allTiles[
+                    loadInfos.tileIndex_x[i], loadInfos.tileIndex_y[i]
+                    ].AddNumberSprite(loadInfos.numberLevel[i]);
+                this.SetEmptyTiles(
+                    this.allTiles[loadInfos.tileIndex_x[i], loadInfos.tileIndex_y[i]], false);
+                this.SetNumberTiles(
+                    this.allTiles[loadInfos.tileIndex_x[i], loadInfos.tileIndex_y[i]].LinkNumberTile, true);
+            }
+            return true;
+        }//if
+
+        return false;
     }
 
     //true이면 업그레이드 여부 확인한거고 false이면 그냥 이동 여부 확인한것
@@ -437,7 +529,9 @@ public class GridManager : MonoBehaviour {
     {
         if (inputDir == InputDirection.NONE)
         {
+#if SHOW_DEBUG_MESSAGES
             print("입력한게 없는데 호출되었다");
+#endif
             return;
         }
 
@@ -445,19 +539,5 @@ public class GridManager : MonoBehaviour {
         //    numberTile.NowMove(inputDir);
         for (int i = 0; i < this.numberTiles.Count; i++)
             this.numberTiles[i].NowMove(inputDir);
-    }
-
-    //숫자타일들이 움직이는지 확인
-    public bool TileMoving()
-    {
-        //활성화 숫자타일들을 순회하며
-        //foreach(NumberTile numberTile in this.numberTiles)
-        //    if (numberTile.IsMove == true) //하나라도 움직이고 있다면..
-        //        return true;
-        for (int i = 0; i < this.numberTiles.Count; i++)
-            if (this.numberTiles[i].IsMove)
-                return true;
-
-        return false;
     }
 }

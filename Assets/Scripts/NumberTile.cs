@@ -78,7 +78,9 @@ public class NumberTile : MonoBehaviour {
         //if (this.numberLevel == numberLevel)
         if (this.numberLevel == numberLevel)
         {
+#if SHOW_DEBUG_MESSAGES
             print("등급이 중복된다.");
+#endif
             return false;
         }
         this.numberLevel = numberLevel; //새로운 숫자로 갱신
@@ -95,7 +97,9 @@ public class NumberTile : MonoBehaviour {
     {
         if(this.numberLevel <= NumberLevel.NONE)
         {
+#if SHOW_DEBUG_MESSAGES
             print("없는 숫자이다.");
+#endif
             return;
         }
 
@@ -222,7 +226,7 @@ public class NumberTile : MonoBehaviour {
                     colSpacing = GridManager.Instance.StandardColliderBounds.extents.x;
                 //목적지 좌표와 내 좌표와의 거리를 판단하여 반복 및 중단 결정
                 //while (Mathf.Abs(this.goalTile.MyPos.x - this.transform.position.x) > colSpacing)
-                while (SimpleMath.AbsoluteValue(this.goalTile.MyPos.x - this.transform.position.x) > colSpacing)
+                while (cSimpleMath.AbsoluteValue(this.goalTile.MyPos.x - this.transform.position.x) > colSpacing)
                 {
                     Vector2 currPos = this.transform.position;
                     //일정 속도로 목적지를 가기
@@ -241,7 +245,7 @@ public class NumberTile : MonoBehaviour {
                 else
                     colSpacing = GridManager.Instance.StandardColliderBounds.extents.y;
                 //while (Mathf.Abs(this.goalTile.MyPos.y - this.transform.position.y) > colSpacing)
-                while (SimpleMath.AbsoluteValue(this.goalTile.MyPos.y - this.transform.position.y) > colSpacing)
+                while (cSimpleMath.AbsoluteValue(this.goalTile.MyPos.y - this.transform.position.y) > colSpacing)
                 {
                     Vector2 currPos = this.transform.position;
                     float next_y =

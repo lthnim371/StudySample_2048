@@ -73,7 +73,9 @@ public class BackTile : MonoBehaviour {
         //이미 연결된 숫자가 있다면 문제인거다..
         if (this.linkNumberTile != null)
         {
+#if SHOW_DEBUG_MESSAGES
             print("연결된 숫자타일이 이미 존재한다");
+#endif
             return false;
         }
         //풀링객체를 가져온다.

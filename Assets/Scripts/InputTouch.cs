@@ -33,7 +33,7 @@ public class InputTouch : MonoBehaviour {
                     //거리 비교를 위한 절대값이 필요하다.
                     Vector2 absDistVec =
                         //new Vector2(Mathf.Abs(distVec.x), Mathf.Abs(distVec.y));
-                        new Vector2(SimpleMath.AbsoluteValue(distVec.x), SimpleMath.AbsoluteValue(distVec.y));
+                        new Vector2(cSimpleMath.AbsoluteValue(distVec.x), cSimpleMath.AbsoluteValue(distVec.y));
                     //절차적 진행으로 인해 어쩔 수 없이 x좌표를 우선순위로 하였다..
                     //결과값 좌표간에 수치가 큰쪽으로 결정하여 첫 터치와의 거리가 일정 수치 이상이라면..
                     if (absDistVec.x >= absDistVec.y && absDistVec.x >= this.flickRange)
