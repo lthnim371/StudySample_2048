@@ -2,11 +2,17 @@
 using System.Collections;
 
 public class InputTouch : MonoBehaviour {
-
+        
     public float flickRange = 3f;
 
     private Touch firstTouch; //플릿 거리 계산을 위한 첫 터치의 위치 보관
     private bool waitTouch = true; //플릿을 했는데 아직 터치를 안 떼고 있을 경우를 대비
+
+    void Awake()
+    {
+        this.flickRange =
+            GameManager.Instance.FindGameSystemSettingValue("플릭감지범위", this.flickRange);
+    }
 
     public InputDirection GetFlickDirection()
     {
@@ -19,13 +25,13 @@ public class InputTouch : MonoBehaviour {
             switch (currTouch.phase) //갖고 온 터치 상태로 판단해보자
             {
                 case TouchPhase.Began: //터치가 처음 들어오면
-                    this.firstTouch = currTouch; //첫번째 터치 위치를 기억하자
+                    //if(this.firstTouch.fingerId != currTouch.fingerId)
+                        this.firstTouch = currTouch; //첫번째 터치 위치를 기억하자
                     this.waitTouch = true; //터치 입력을 받을 준비를 하자.
                     break;
                 case TouchPhase.Moved:
                     if (this.waitTouch == false) //플릿 후에도 터치되어있는 상태를 방지하기 위함
                         break;
-
                     //좌표별로 현재 터치 위치와 처음 터치 위치간의 차이값을 가져온다.
                     Vector2 distVec = new Vector2(
                         currTouch.position.x - this.firstTouch.position.x,
@@ -48,8 +54,7 @@ public class InputTouch : MonoBehaviour {
                         this.waitTouch = false;
                     }
                     break;
-                case TouchPhase.Ended:
-                    
+                case TouchPhase.Ended: //터치한 손을 빠르게 떼면 인지를 못한다. (즉, 해당 터치 아이디가 남아있는듯..)
                     break;
             }
         }//if

@@ -87,6 +87,7 @@ public class ScoreManager : MonoBehaviour {
         //this.scoreLabel.text =
         //  string.Format("{0} : {1}", this.scoreText, this.currentScore);
         this.currentScoreLabel.text = this.currentScore.ToString();
+        this.ChangeScore(); //현재 점수가 최종점수보다 높다면 바로 갱신
     }
 
     //현재 점수 초기화.

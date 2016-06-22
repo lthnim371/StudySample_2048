@@ -45,6 +45,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\FacebookSDK\SDK\Editor\FacebookBuild.cs" />
+     <Compile Include="Assets\FacebookSDK\SDK\Editor\FacebookConsoleEndpoint.cs" />
+     <Compile Include="Assets\FacebookSDK\SDK\Editor\FacebookPostprocess.cs" />
+     <Compile Include="Assets\FacebookSDK\SDK\Editor\FacebookSettingsEditor.cs" />
+     <Compile Include="Assets\FacebookSDK\SDK\Editor\Utility.cs" />
+     <Compile Include="Assets\FacebookSDK\SDK\Editor\android\FacebookAndroidUtil.cs" />
+     <Compile Include="Assets\FacebookSDK\SDK\Editor\android\ManifestMod.cs" />
+     <Compile Include="Assets\FacebookSDK\SDK\Editor\iOS\FixupFiles.cs" />
+     <Compile Include="Assets\FacebookSDK\SDK\Editor\iOS\PListDict.cs" />
+     <Compile Include="Assets\FacebookSDK\SDK\Editor\iOS\PListParser.cs" />
      <Compile Include="Assets\NGUI\Examples\Scripts\InventorySystem\Editor\InvDatabaseInspector.cs" />
      <Compile Include="Assets\NGUI\Examples\Scripts\InventorySystem\Editor\InvFindItem.cs" />
      <Compile Include="Assets\NGUI\Scripts\Editor\BMFontReader.cs" />
@@ -80,6 +90,8 @@
      <Compile Include="Assets\NGUI\Scripts\Editor\UITiledSpriteInspector.cs" />
      <Compile Include="Assets\NGUI\Scripts\Editor\UIWidgetInspector.cs" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Depth Cutout.shader" />
+     <None Include="Assets\FacebookSDK\SDK\Editor\android\DefaultAndroidManifest.xml" />
+     <None Include="Assets\Resources\XMLs\GameSystemSettingSchema.xml" />
      <None Include="Assets\NGUI\Examples\Models\Orc\Orc Skin.shader" />
      <None Include="Assets\NGUI\Examples\Atlases\Wooden\Arimo20.txt" />
      <None Include="Assets\NGUI\Examples\Atlases\Wooden\Arimo14.txt" />
@@ -101,16 +113,19 @@
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Dynamic Font.shader" />
      <None Include="Assets\NGUI\ReadMe - 2.7.0.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored.shader" />
+     <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
      <None Include="Assets\NGUI\Examples\Other\English.txt" />
      <None Include="Assets\NGUI\Examples\Other\French.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored (Packed).shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Additive Colored.shader" />
+     <None Include="Assets\FacebookSDK\SDK\Scripts\Canvas\Resources\JSSDKBindings.txt" />
      <None Include="Assets\NGUI\Examples\Atlases\Refractive\Refractive Font - Header.txt" />
      <None Include="Assets\NGUI\Examples\Shaders\Refractive.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Depth.shader" />
      <None Include="Assets\NGUI\Examples\Atlases\SciFi\SciFi Font - Normal.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored (SoftClip).shader" />
      <None Include="Assets\NGUI\Examples\Models\Orc Armor\Orc Armor.shader" />
+     <None Include="Assets\Resources\XMLs\GameSystemSetting.xml" />
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>
  </Reference>

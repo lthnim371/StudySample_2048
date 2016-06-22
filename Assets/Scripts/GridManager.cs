@@ -103,6 +103,9 @@ public class GridManager : MonoBehaviour {
             this.allTiles[temp_i, 0].Index_Y = 0;
             this.emptyTiles.Add(this.allTiles[temp_i, 0]);
         }
+
+        this.tileMoveSpeed =
+            GameManager.Instance.FindGameSystemSettingValue("타일이동속도", this.tileMoveSpeed);        
     }
 
     public Bounds StandardColliderBounds
@@ -362,7 +365,7 @@ public class GridManager : MonoBehaviour {
             return State.WaitingForInput;
         }
 
-        bool allMaxNumber = false; //올클리어인지 확인을 위한 용도
+        //bool allMaxNumber = false; //올클리어인지 확인을 위한 용도
 
         for (int i = 0; i < this.row; i++)
         {
@@ -374,7 +377,7 @@ public class GridManager : MonoBehaviour {
                 if (currTileNumLev == NumberLevel._2048) //최대등급이라면 검사할 필요없음
                     continue;
 
-                allMaxNumber = false; //여기로 오면 올클리어는 실패임
+                //allMaxNumber = false; //여기로 오면 올클리어는 실패임
 
                 //다음 열과 동급인지 확인
                 if (j + 1 < this.column &&
@@ -394,7 +397,8 @@ public class GridManager : MonoBehaviour {
         }
         //모두 검사해보았지만 도저히 합쳐질만한 요소 없음
         //올클리어 여부 확인하여 반환값 결정
-        return allMaxNumber == true ? State.Perfect : State.GameOver;
+        //return allMaxNumber == true ? State.Perfect : State.GameOver;
+        return State.GameOver;
     }
                 
     //숫자타일들이 움직이는지 확인

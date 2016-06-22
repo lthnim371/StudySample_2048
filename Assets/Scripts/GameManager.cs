@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Xml;
+using System.IO;
+using System.Collections.Generic;
 
 public enum State
 {
@@ -72,7 +74,7 @@ public static class cSimpleMath
     }
 }
 
-[RequireComponent( typeof(InputTouch ))]
+[RequireComponent(typeof(InputTouch))]
 public class GameManager : MonoBehaviour {
 
     private static GameManager sInstance;
@@ -90,10 +92,13 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public string getXmlName = "GameSystemSetting";
+
     private State state = State.Loaded;
     //private InputDirection inputDirection = InputDirection.NONE;
     private InputTouch inputTouch;
     private bool paused = false;
+    private Dictionary<string, float> gameSystemSettingMap;
 
     private bool cheatKey = false; //오로지 치트용
 
@@ -105,6 +110,9 @@ public class GameManager : MonoBehaviour {
 
         //일단 임시로 해상도 2:3으로 강제 맞추기
         Screen.SetResolution(Screen.width, (int)((Screen.width * 0.5f) * 3), true);
+
+        this.gameSystemSettingMap = new Dictionary<string, float>();
+        this.LoadXml(this.getXmlName);
     }
 
     void Start() //게임시작 전
@@ -122,7 +130,10 @@ public class GameManager : MonoBehaviour {
             Application.Quit();
         else if (Input.GetKeyDown(KeyCode.Menu)) //일단 임시 치트키(게임올클리어용)
         {
-            if(this.cheatKey == true) //이미 사용상태라면 취소
+            if (this.cheatKey == true) //이미 사용상태라면 취소
+                return;
+
+            this.cheatKey = true;
         }
         else if (this.paused == true) //일단 홈키로 어플밖으로 나갔을때는 입력 안 받도록 하자. 추후 타임오버 등을 고려할 때 변경해야될듯..
             return;
@@ -193,7 +204,7 @@ public class GameManager : MonoBehaviour {
                 break;
         }//switch
 
-	}//Update
+    }//Update
 
     //홈키로 어플 바깥으로 나간 경우
     void OnApplicationPause(bool pause)
@@ -216,6 +227,18 @@ public class GameManager : MonoBehaviour {
             ScoreManager.Instance.SaveScoreInfo(false); //무조건 최종점수만 저장하자
         }
     }
+
+    public float FindGameSystemSettingValue(string findName, float originalValue = 0f)
+    {
+        //찾는 이름의 데이터가 존재한다면
+        if (this.gameSystemSettingMap.ContainsKey(findName))
+            return this.gameSystemSettingMap[findName];
+        else //없으면 일단 0으로 반환하자
+#if SHOW_DEBUG_MESSAGES
+            print(string.Format("{0}의 딕셔너리 데이터가 없다", findName));
+#endif
+        return originalValue;
+    }
     
     //리셋버튼 클릭시 초기화
     public void ResetGame()
@@ -234,5 +257,41 @@ public class GameManager : MonoBehaviour {
         this.cheatKey = false;
 
         return;
+    }
+
+    private void LoadXml(string xmlName)
+    {
+        XmlReader xmlReader = null;
+        TextAsset xmlTextAsset =
+                    Resources.Load(string.Format("XMLs/{0}", xmlName)) as TextAsset;
+        string xmlString = xmlTextAsset.ToString();
+        StringReader strReader = new StringReader(xmlString);
+        try
+        {
+            xmlReader = XmlReader.Create(strReader);
+        }
+        catch(System.Exception e)
+        {
+            print(e.Message);
+            return;
+        }
+
+        while (xmlReader.Read())
+        {
+            if (xmlReader.Name.CompareTo("System") == 0 &&
+                xmlReader.NodeType == XmlNodeType.Element)
+            {
+                this.gameSystemSettingMap.Add(
+                    xmlReader.GetAttribute("Name"),
+                    float.Parse(xmlReader.GetAttribute("Value"))
+                    );
+            }
+        }
+
+        xmlReader.Close();
+
+#if SHOW_DEBUG_MESSAGES
+        print(string.Format("{0} XML 데이터 가져옴", xmlName));
+#endif
     }
 }

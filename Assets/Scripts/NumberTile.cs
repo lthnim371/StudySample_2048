@@ -27,6 +27,8 @@ public class NumberTile : MonoBehaviour {
 
         //this.myColliderBounds = this.GetComponent<BoxCollider2D>().bounds;
         this.myTweenScale = this.GetComponent<TweenScale>();
+        this.myTweenScale.duration =
+            GameManager.Instance.FindGameSystemSettingValue("타일이펙트시간", this.myTweenScale.duration);
     }
 
     //void Update()
