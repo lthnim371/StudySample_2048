@@ -113,6 +113,8 @@ public class GameManager : MonoBehaviour {
 
         this.gameSystemSettingMap = new Dictionary<string, float>();
         this.LoadXml(this.getXmlName);
+
+        GPGSManager.Instance.Initialize();
     }
 
     void Start() //게임시작 전

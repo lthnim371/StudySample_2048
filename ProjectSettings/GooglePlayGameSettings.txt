@@ -1,2 +1,10 @@
 lastUpgrade=00934
 proj.pluginVersion=0.9.34
+proj.AppId=177436511259
+and.BundleId=com.DefaultCompany.Sample_2048
+proj.classDir=Assets
+proj.ConstantsClassName=Sample_2048.Sample_2048Class
+and.ResourceData=%3c%3fxml+version%3d%221.0%22+encoding%3d%22utf-8%22%3f%3e%0d%0a%3c%21--%0d%0aGoogle+Play+game+services+IDs.%0d%0aSave+this+file+as+res%2fvalues%2fgames-ids.xml+in+your+project.%0d%0a--%3e%0d%0a%3cresources%3e%0d%0a++%3cstring+name%3d%22app_id%22%3e177436511259%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22package_name%22%3ecom.DefaultCompany.Sample_2048%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_test_achievement%22%3eCgkIm5ipgJUFEAIQAQ%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_incremental_achivement%22%3eCgkIm5ipgJUFEAIQAg%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_3%22%3eCgkIm5ipgJUFEAIQAw%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_4%22%3eCgkIm5ipgJUFEAIQBA%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_5%22%3eCgkIm5ipgJUFEAIQBQ%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22leaderboard_awesome_leaderboard_for_cool_people%22%3eCgkIm5ipgJUFEAIQBg%3c%2fstring%3e%0d%0a%3c%2fresources%3e%0d
+and.ClientId=177436511259-f997gncc815p89nh1g9l9ec4sjdj490d.apps.googleusercontent.com
+proj.requireGPlus=false
+android.SetupDone=true
