@@ -3,7 +3,7 @@ using System.Collections;
 
 public class InputTouch : MonoBehaviour {
         
-    public float flickRange = 3f;
+    private float flickRange = 3f;
 
     private Touch firstTouch; //플릿 거리 계산을 위한 첫 터치의 위치 보관
     private bool waitTouch = true; //플릿을 했는데 아직 터치를 안 떼고 있을 경우를 대비
@@ -11,7 +11,7 @@ public class InputTouch : MonoBehaviour {
     void Awake()
     {
         this.flickRange =
-            GameManager.Instance.FindGameSystemSettingValue("플릭감지범위", this.flickRange);
+            XmlManager.Instance.FindGameSystemSettingValue("플릭감지범위", this.flickRange);
     }
 
     public InputDirection GetFlickDirection()

@@ -16,7 +16,7 @@ public enum InputDirection
 
 public enum NumberLevel
 {
-    NONE, _2, _4, _8, _16, _32, _64, _128, _256, _512, _1024, _2048
+    NONE, _2, _4, _8, _16, _32, _64, _128, _256, _512, _1024, _2048, _4096, _8192, _16384, _32768
 }
 
 [System.Serializable]
@@ -75,53 +75,41 @@ public static class cSimpleMath
 }
 
 [RequireComponent(typeof(InputTouch))]
-public class GameManager : MonoBehaviour {
-
-    private static GameManager sInstance;
-    public static GameManager Instance
-    {
-        get
-        {
-            if (sInstance == null)
-            {
-                GameObject newGameObj = new GameObject("_Gamemanager");
-                sInstance = newGameObj.AddComponent<GameManager>();
-            }
-
-            return sInstance;
-        }
-    }
-
-    public string getXmlName = "GameSystemSetting";
+public class GameManager : Singleton<GameManager> {
 
     private State state = State.Loaded;
     //private InputDirection inputDirection = InputDirection.NONE;
     private InputTouch inputTouch;
     private bool paused = false;
-    private Dictionary<string, float> gameSystemSettingMap;
+    private bool menuOn = false;
+    public GameObject menuPanel;
 
-    private bool cheatKey = false; //오로지 치트용
-
-    void Awake()
+    protected override void Awake()
     {
-        sInstance = this; //싱글톤화
+        instance = this; //싱글톤화
+        //this.gameObject.name = "_GameManager";
 
         this.inputTouch = this.GetComponent<InputTouch>(); //입력만 받는 매니저스크립트 가져오기
 
         //일단 임시로 해상도 2:3으로 강제 맞추기
         Screen.SetResolution(Screen.width, (int)((Screen.width * 0.5f) * 3), true);
 
-        this.gameSystemSettingMap = new Dictionary<string, float>();
-        this.LoadXml(this.getXmlName);
+        //GameObject findGameObj = GameObject.FindGameObjectWithTag("UI");
+        //if (findGameObj == null)
+        //{ print("UI태그의 게임오브젝트를 못 찾았다."); return; }
 
-        GPGSManager.Instance.Initialize();
+        //this.menuPanel = findGameObj.transform.FindChild("Camera/Anchor/MenuPanel").gameObject;
+        //if (this.menuPanel == null)
+        //    print("menuPanel를 못 찾았다.");
+
     }
 
-    void Start() //게임시작 전
+    void Start()
     {
         ScoreManager.Instance.LoadScoreInfo(); //저장된 최종점수 가져오기
         if (GridManager.Instance.LoadLastInfo()) //저장된 마지막 위치정보 가져오기
             this.state = State.WaitingForInput; //정상적으로 가져왔다면 바로 입력대기로 이동
+        //GPGSManager.Instance.Initialize(); //구글플레이게임서비스 준비
     }
 
     // Update is called once per frame
@@ -129,13 +117,23 @@ public class GameManager : MonoBehaviour {
 
         //일단 뒤로가기키로 게임종료한다. 추후에 바로 종료 안되게 설정해도 된다.
         if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
-        else if (Input.GetKeyDown(KeyCode.Menu)) //일단 임시 치트키(게임올클리어용)
         {
-            if (this.cheatKey == true) //이미 사용상태라면 취소
-                return;
-
-            this.cheatKey = true;
+            if (this.menuOn) //만약 메뉴패널 열려있다면 닫자
+            {
+                this.paused = this.menuOn = !this.menuOn;
+                this.menuPanel.SetActive(false);
+            }
+            else //평상시상태라면 바로 종료
+                Application.Quit();
+        }
+        else if (Input.GetKeyDown(KeyCode.Menu)) //메뉴 버튼 누르면
+        {
+            //다른 동작안되도록 일시정지모드도 포함
+            this.paused = this.menuOn = !this.menuOn;
+            if (this.menuOn)
+                this.menuPanel.SetActive(true);
+            else
+                this.menuPanel.SetActive(false);
         }
         else if (this.paused == true) //일단 홈키로 어플밖으로 나갔을때는 입력 안 받도록 하자. 추후 타임오버 등을 고려할 때 변경해야될듯..
             return;
@@ -228,19 +226,7 @@ public class GameManager : MonoBehaviour {
             PlayerPrefs.DeleteAll(); //다 비운다.
             ScoreManager.Instance.SaveScoreInfo(false); //무조건 최종점수만 저장하자
         }
-    }
-
-    public float FindGameSystemSettingValue(string findName, float originalValue = 0f)
-    {
-        //찾는 이름의 데이터가 존재한다면
-        if (this.gameSystemSettingMap.ContainsKey(findName))
-            return this.gameSystemSettingMap[findName];
-        else //없으면 일단 0으로 반환하자
-#if SHOW_DEBUG_MESSAGES
-            print(string.Format("{0}의 딕셔너리 데이터가 없다", findName));
-#endif
-        return originalValue;
-    }
+    }    
     
     //리셋버튼 클릭시 초기화
     public void ResetGame()
@@ -255,24 +241,21 @@ public class GameManager : MonoBehaviour {
         if (PlayerPrefs.HasKey("CurrentScore")) //만약 저장한 진행점수 있으면
             PlayerPrefs.DeleteKey("CurrentScore"); //없애자
 
-        //일단 임시 치트키 (치트도 초기화)
-        this.cheatKey = false;
-
         return;
     }
 
-    private void LoadXml(string xmlName)
+    /*private void LoadXml()
     {
         XmlReader xmlReader = null;
         TextAsset xmlTextAsset =
-                    Resources.Load(string.Format("XMLs/{0}", xmlName)) as TextAsset;
+                    Resources.Load(string.Format("XMLs/{0}", getXmlName)) as TextAsset;
         string xmlString = xmlTextAsset.ToString();
         StringReader strReader = new StringReader(xmlString);
         try
         {
             xmlReader = XmlReader.Create(strReader);
         }
-        catch(System.Exception e)
+        catch (System.Exception e)
         {
             print(e.Message);
             return;
@@ -293,7 +276,7 @@ public class GameManager : MonoBehaviour {
         xmlReader.Close();
 
 #if SHOW_DEBUG_MESSAGES
-        print(string.Format("{0} XML 데이터 가져옴", xmlName));
+        print(string.Format("{0} XML 데이터 가져옴", getXmlName));
 #endif
-    }
+    }*/
 }

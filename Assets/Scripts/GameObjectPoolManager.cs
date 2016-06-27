@@ -2,27 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class GameObjectPoolManager : MonoBehaviour {
-
-    private static GameObjectPoolManager sInstance;
-    public static GameObjectPoolManager Instance
-    {
-        get
-        {
-            if (sInstance == null)
-            {
-                GameObject newGameObj = new GameObject("_GameObjectPoolManager");
-                sInstance = newGameObj.AddComponent<GameObjectPoolManager>();
-            }
-
-            return sInstance;
-        }
-    }
+public class GameObjectPoolManager : Singleton<GameObjectPoolManager> {
 
     private Dictionary<string, GameObjectPool> poolTable;
 
-    void Awake()
+    protected override void Awake()
     {
+        this.gameObject.name = "_GameObjectPoolManager";
+
         this.poolTable = new Dictionary<string, GameObjectPool>();
 
         DontDestroyOnLoad(this.gameObject);

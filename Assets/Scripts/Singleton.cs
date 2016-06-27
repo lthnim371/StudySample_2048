@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-//유용한 방법이나 씬에 이미 존재해야만 가능
-public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
-    private static T instance = null;
+    protected static T instance = null;
     public static T Instance
     {
         get {
@@ -12,13 +11,13 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             {
                 //씬에 존재하는 객체를 대상으로 하였기 때문에
                 //씬 사이를 오고갈 경우 문제가 될 수 있다.
-                instance = FindObjectOfType(typeof(T)) as T;
+                //instance = FindObjectOfType(typeof(T)) as T;
 
-                if (instance == null)
-                {
-                    Debug.Log("Nothing Singleton");
-                    return null;
-                }//if
+                //그래서 임의의 이름으로 게임오브젝트를 새로 추가하고
+                //자식클래스의 Awake에서 이름을 변경해주자
+                GameObject newGameObj = new GameObject("_TempManager");
+                instance = newGameObj.AddComponent<T>();
+                
             }//if
 
             return instance;
@@ -26,4 +25,5 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }//get
     }
 
+    protected abstract void Awake(); //자식클래스에서 게임오브젝트 이름을 변경해주자
 }

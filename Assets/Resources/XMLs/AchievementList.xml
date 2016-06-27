@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AchievementList>
+	<Achievement UnlockName="None" IncrementalName="None"/>
+	<Achievement UnlockName="achievement_4" IncrementalName="achievement_10000th_4"/>
+	<Achievement UnlockName="achievement_8" IncrementalName="achievement_10000th_8"/>
+	<Achievement UnlockName="achievement_16" IncrementalName="achievement_10000th_16"/>
+	<Achievement UnlockName="achievement_32" IncrementalName="achievement_10000th_32"/>
+	<Achievement UnlockName="achievement_64" IncrementalName="achievement_10000th_64"/>
+	<Achievement UnlockName="achievement_128" IncrementalName="achievement_1000th_128"/>
+	<Achievement UnlockName="achievement_256" IncrementalName="achievement_1000th_256"/>
+	<Achievement UnlockName="achievement_512" IncrementalName="achievement_1000th_512"/>
+	<Achievement UnlockName="achievement_1024" IncrementalName="achievement_100th_1024"/>
+	<Achievement UnlockName="achievement_2048" IncrementalName="achievement_10th_2048"/>
+	<Achievement UnlockName="achievement_4096" IncrementalName="achievement_8th_4096"/>
+	<Achievement UnlockName="achievement_8192" IncrementalName="achievement_6th_8192"/>
+	<Achievement UnlockName="achievement_16384" IncrementalName="achievement_4th_16384"/>
+	<Achievement UnlockName="achievement_32768" IncrementalName="achievement_2nd_32768"/>
+</AchievementList>

@@ -102,6 +102,9 @@ public class BackTile : MonoBehaviour {
     public void UpdateSprite()
     {
         this.linkNumberTile.UpdateSprite();
+
+        //구글플레이게임서비스에 정보 전달
+        GPGSManager.Instance.ReadyUnlockAchievement(this.linkNumberTile.NumberLevel);
     }
 
     //업그레이드 예약

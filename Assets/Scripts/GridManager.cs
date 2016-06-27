@@ -2,14 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class GridManager : MonoBehaviour {
-
-    //싱글톤 처리
-    private static GridManager sInstance;
-    public static GridManager Instance
-    {
-        get { return sInstance; }
-    }
+public class GridManager : Singleton<GridManager> {
 
     public int row = 4; //행 갯수
     public int column = 4; //열 갯수
@@ -30,9 +23,9 @@ public class GridManager : MonoBehaviour {
     private List<NumberTile> numberTiles; //활성화된 숫자타일만 보관
     private Bounds standardColliderBounds; //거리계산(충돌) 시 필요한 오프셋 파악을 위함
 
-    void Awake()
+    protected override void Awake()
     {
-        sInstance = this; //싱글톤으로 만들기 위함
+        instance = this; //싱글톤으로 만들기 위함
 
         //숫자타일객체들 풀링처리
         //GameObjectPoolManager.Instance.ReadyPool("Prefabs", "NumberInstance", this.row * this.column);
@@ -105,7 +98,7 @@ public class GridManager : MonoBehaviour {
         }
 
         this.tileMoveSpeed =
-            GameManager.Instance.FindGameSystemSettingValue("타일이동속도", this.tileMoveSpeed);        
+            XmlManager.Instance.FindGameSystemSettingValue("타일이동속도", this.tileMoveSpeed);        
     }
 
     public Bounds StandardColliderBounds

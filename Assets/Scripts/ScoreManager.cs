@@ -1,56 +1,51 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ScoreManager : MonoBehaviour {
+public class ScoreManager : Singleton<ScoreManager> {
 
-    private static ScoreManager sInstance;
-    public static ScoreManager Instance
-    {
-        get
-        {
-            if (sInstance == null)
-            {
-                GameObject newGameObj = new GameObject("_ScoreManager");
-                sInstance = newGameObj.AddComponent<ScoreManager>();
-            }
+    //private static ScoreManager sInstance;
+    //public static ScoreManager Instance
+    //{
+    //    get
+    //    {
+    //        if (sInstance == null)
+    //        {
+    //            GameObject newGameObj = new GameObject("_ScoreManager");
+    //            sInstance = newGameObj.AddComponent<ScoreManager>();
+    //        }
 
-            return sInstance;
-        }
-    }
+    //        return sInstance;
+    //    }
+    //}
 
     private readonly string strZero = "0";
     private readonly string strGameOver = "GameOver";
     private readonly string strPerfect = "Perfect";
 
-    public UILabel bestScoreLabel; //최고점수 라벨
-    public UILabel currentScoreLabel; //진행점수 라벨
-    public UILabel gameEndLabel; //출력될 게임앤드 라벨
+    private UILabel bestScoreLabel; //최고점수 라벨
+    private UILabel currentScoreLabel; //진행점수 라벨
+    private UILabel gameEndLabel; //출력될 게임앤드 라벨
     //private string scoreText = "Score";
     private int currentScore = 0; //보관될 진행점수
     private int bestScore = 0; //보관될 최고점수
 
-    void Awake()
+    protected override void Awake()
     {
-        sInstance = this; //싱글톤화
+        //sInstance = this; //싱글톤화
+        this.gameObject.name = "_ScoreManager";
 
-        /* 추후에 씬뷰에 미리 생성 없이 사용시 해제 바람
         GameObject findGameObj = GameObject.FindGameObjectWithTag("UI");
-        if(findGameObj == null)
-        {
-            print("UI태그의 게임오브젝트를 못 찾았다.");
-            return;
-        }
-        Transform findTM = findGameObj.transform.FindChild("Camera/Anchor/TextPanel");
-        this.scoreLabel = findTM.FindChild("ScoreLabel").GetComponent<UILabel>();
-        this.GameOverLabel = findTM.FindChild("GameOverLabel").GetComponent<UILabel>();
-        if (this.scoreLabel == null || this.GameOverLabel == null)
-        {
-            print("UILabel컴포넌트를 못 찾았다.");
-            return;
-        }
+        if (findGameObj == null) {
+            print("UI태그의 게임오브젝트를 못 찾았다."); return; }
 
-        this.GameOverLabel.gameObject.SetActive(false);
-        */
+        Transform findTM = findGameObj.transform.FindChild("Camera/Anchor/TextPanel");
+        if (findTM == null) {
+            print("TextPanel를 못 찾았다."); return; }
+
+        this.bestScoreLabel = findTM.FindChild("BestScore/ScoreLabel").GetComponent<UILabel>();
+        this.currentScoreLabel = findTM.FindChild("CurrentScore/ScoreLabel").GetComponent<UILabel>();
+        this.gameEndLabel = findTM.FindChild("GameEndLabel").GetComponent<UILabel>();
+        
 #if SHOW_DEBUG_MESSAGES
         if (this.bestScoreLabel == null || this.currentScoreLabel == null || this.gameEndLabel == null)
             print("라벨을 물려놓지 않았다.");
@@ -158,6 +153,9 @@ public class ScoreManager : MonoBehaviour {
         {
             this.bestScore = this.currentScore;
             this.bestScoreLabel.text = this.currentScore.ToString();
+
+            //리더보드로 점수 전달
+            GPGSManager.Instance.PostingLeaderboard(this.bestScore);
         }
     }
 }
