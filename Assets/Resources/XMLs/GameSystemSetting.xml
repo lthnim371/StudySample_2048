@@ -1,6 +1,7 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <GameSystemList>
-	<System Name="플릭감지범위" Value="50"/>
+	<System Name="플릭감지범위" Value="30"/>
 	<System Name="타일이동속도" Value="2"/>
 	<System Name="타일이펙트시간" Value="0.5"/>
+	<System Name="메뉴창등장시간" Value="0.25"/>
 </GameSystemList>

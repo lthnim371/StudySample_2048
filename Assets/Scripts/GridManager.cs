@@ -462,6 +462,9 @@ public class GridManager : Singleton<GridManager> {
                 this.SetNumberTiles(
                     this.allTiles[loadInfos.tileIndex_x[i], loadInfos.tileIndex_y[i]].LinkNumberTile, true);
             }
+#if SHOW_DEBUG_MESSAGES
+            print("Success PlayerPrefs Json Load");
+#endif
             return true;
         }//if
 

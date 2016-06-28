@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<IncrementalAchievementList>
+	<IncrementalAchievement NumberLevel="_4" ID="CgkIm5ipgJUFEAIQAg"/>
+	<IncrementalAchievement NumberLevel="_8" ID="CgkIm5ipgJUFEAIQDg"/>
+	<IncrementalAchievement NumberLevel="_16" ID="CgkIm5ipgJUFEAIQDw"/>
+	<IncrementalAchievement NumberLevel="_32" ID="CgkIm5ipgJUFEAIQEA"/>
+	<IncrementalAchievement NumberLevel="_64" ID="CgkIm5ipgJUFEAIQEQ"/>
+	<IncrementalAchievement NumberLevel="_128" ID="CgkIm5ipgJUFEAIQEg"/>
+	<IncrementalAchievement NumberLevel="_256" ID="CgkIm5ipgJUFEAIQEw"/>
+	<IncrementalAchievement NumberLevel="_512" ID="CgkIm5ipgJUFEAIQFA"/>
+	<IncrementalAchievement NumberLevel="_1024" ID="CgkIm5ipgJUFEAIQFQ"/>
+	<IncrementalAchievement NumberLevel="_2048" ID="CgkIm5ipgJUFEAIQFg"/>
+	<IncrementalAchievement NumberLevel="_4096" ID="CgkIm5ipgJUFEAIQGw"/>
+	<IncrementalAchievement NumberLevel="_8192" ID="CgkIm5ipgJUFEAIQHA"/>
+	<IncrementalAchievement NumberLevel="_16384" ID="CgkIm5ipgJUFEAIQHQ"/>
+	<IncrementalAchievement NumberLevel="_32768" ID="CgkIm5ipgJUFEAIQHg"/>
+</IncrementalAchievementList>

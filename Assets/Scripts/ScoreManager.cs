@@ -146,7 +146,7 @@ public class ScoreManager : Singleton<ScoreManager> {
     }
 
     //최종 점수 변경하기
-    private void ChangeScore()
+    public void ChangeScore()
     {
         //현재 점수가 최종점수보다 크다면 변경
         if (this.currentScore > this.bestScore)

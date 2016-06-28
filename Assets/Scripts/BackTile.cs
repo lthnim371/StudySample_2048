@@ -104,7 +104,10 @@ public class BackTile : MonoBehaviour {
         this.linkNumberTile.UpdateSprite();
 
         //구글플레이게임서비스에 정보 전달
-        GPGSManager.Instance.ReadyUnlockAchievement(this.linkNumberTile.NumberLevel);
+        GPGSManager.Instance.UnlockAchievement(
+            XmlManager.Instance.FindAchievementID(this.linkNumberTile.NumberLevel.ToString(), true));
+        GPGSManager.Instance.IncrementalAchievement(
+            XmlManager.Instance.FindAchievementID(this.linkNumberTile.NumberLevel.ToString(), false));
     }
 
     //업그레이드 예약

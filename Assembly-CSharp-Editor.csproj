@@ -126,11 +126,11 @@
      <None Include="Assets\NGUI\Resources\Shaders\GUI - Text Shader (SoftClip).shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Dynamic Font (AlphaClip).shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Masked Colored.shader" />
-     <None Include="Assets\Resources\XMLs\AchievementList.xml" />
      <None Include="Assets\NGUI\Examples\Atlases\Wooden\Arimo18.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored (Packed) (AlphaClip) .shader" />
      <None Include="Assets\Plugins\Android\firebase-common-9.0.2\proguard.txt" />
      <None Include="Assets\GooglePlayGames\Editor\template-GameInfo.txt" />
+     <None Include="Assets\Resources\XMLs\UnlockAchievement.xml" />
      <None Include="Assets\NGUI\Examples\Atlases\SciFi\SciFi Font - Header.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored (AlphaClip).shader" />
      <None Include="Assets\GooglePlayGames\Editor\template-AndroidManifest.txt" />
@@ -153,6 +153,7 @@
      <None Include="Assets\GooglePlayGames\Editor\template-Constants.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Additive Colored.shader" />
      <None Include="Assets\Plugins\Android\firebase-common-9.0.2\AndroidManifest.xml" />
+     <None Include="Assets\Resources\XMLs\IncrementalAchievement.xml" />
      <None Include="Assets\FacebookSDK\SDK\Scripts\Canvas\Resources\JSSDKBindings.txt" />
      <None Include="Assets\NGUI\Examples\Atlases\Refractive\Refractive Font - Header.txt" />
      <None Include="Assets\NGUI\Examples\Shaders\Refractive.shader" />

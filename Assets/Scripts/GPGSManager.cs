@@ -10,6 +10,8 @@ public class GPGSManager : Singleton<GPGSManager> {
     //public long Score { get; set; }
     public UILabel loggedLabel;
     public UILabel leaderboardUpdateLabel;
+    public UILabel profileLabel;
+    public UILabel achieveLabel;
 
     //일단 임시로 바로 준비하게끔하자
     protected override void Awake()
@@ -32,6 +34,11 @@ public class GPGSManager : Singleton<GPGSManager> {
         PlayGamesPlatform.Activate(); //사용준비 활성화?
     }
 
+    public bool IsLogged()
+    {
+        return Social.localUser.authenticated;
+    }
+
     //구글플레이게임에 로그인
     public void Login()
     {
@@ -52,7 +59,7 @@ public class GPGSManager : Singleton<GPGSManager> {
                     print("Login Failure");
                 }
             });
-        }
+        }//if
     }
 
     //구글플레이게임 로그아웃
@@ -80,7 +87,7 @@ public class GPGSManager : Singleton<GPGSManager> {
     }
 
     //업적 해제
-    private void UnlockAchievement(string achievementName)
+    public void UnlockAchievement(string achievementName)
     {
         if (Social.localUser.authenticated)
         {
@@ -88,24 +95,36 @@ public class GPGSManager : Singleton<GPGSManager> {
             Social.ReportProgress(achievementName, 100f, (bool success) =>
             {
                 if (success)
+                {
                     print("UnlockAchievement Success");
+                    achieveLabel.text = "UnlockAchievement Success";
+                }
                 else
+                {
                     print("UnlockAchievement Failure");
+                    achieveLabel.text = "UnlockAchievement Failure";
+                }
             });
         }//if
     }
 
     //증가형 업적 갱신
-    private void IncrementalAchievement(string achievementName)
+    public void IncrementalAchievement(string achievementName)
     {
         if (Social.localUser.authenticated)
         {
-            PlayGamesPlatform.Instance.IncrementAchievement(achievementName, 5, (bool success) =>
+            PlayGamesPlatform.Instance.IncrementAchievement(achievementName, 1, (bool success) =>
             {
                 if (success)
+                {
                     print("IncrementalAchievement Success");
+                    achieveLabel.text = "IncrementalAchievement Success";
+                }
                 else
+                {
                     print("IncrementalAchievement Failure");
+                    achieveLabel.text = "IncrementalAchievement Failure";
+                }
             });
         }//if
     }
@@ -122,12 +141,12 @@ public class GPGSManager : Singleton<GPGSManager> {
                     if (success)
                     {
                         print("PostingLeaderboard Success");
-                        leaderboardUpdateLabel.text = "LB Update Success";
+                        leaderboardUpdateLabel.text = "Leaderboard Update Success";
                     }
                     else
                     {
                         print("PostingLeaderboard Failure");
-                        leaderboardUpdateLabel.text = "LB Update Failure";
+                        leaderboardUpdateLabel.text = "Leaderboard Update Failure";
                     }
                 });
         }//if
@@ -140,6 +159,8 @@ public class GPGSManager : Singleton<GPGSManager> {
         {
             Social.ShowAchievementsUI();
         }//if
+        else
+            this.Login();
     }
 
     //전체 리더보드목록 보여주기
@@ -149,6 +170,8 @@ public class GPGSManager : Singleton<GPGSManager> {
         {
             Social.ShowLeaderboardUI();
         }//if
+        else
+            this.Login();
     }
 
     //특정 리더보드 상세하게 보여주기
@@ -159,11 +182,36 @@ public class GPGSManager : Singleton<GPGSManager> {
             PlayGamesPlatform.Instance.ShowLeaderboardUI(
                 Sample_2048Class.leaderboard_awesome_leaderboard);
         }//if
+        else
+            this.Login();
     }
 
-    //숫자레벨에 따른 업적 분류
-    public void ReadyUnlockAchievement(NumberLevel numberLevel)
+    public Texture2D GetProfileImage()
     {
-        
+        if (Social.localUser.authenticated)
+        {
+            profileLabel.text = "Get Profile Image";
+            return Social.localUser.image;
+        }
+        else
+        {
+            profileLabel.text = "Fail Profile Image";
+            return null;
+        }
     }
+
+    public string GetProfileName()
+    {
+        if (Social.localUser.authenticated)
+        {
+            profileLabel.text = "Get Profile Name";
+            return Social.localUser.userName;
+        }
+        else
+        {
+            profileLabel.text = "Fail Profile Name";
+            return null;
+        }
+    }
+
 }

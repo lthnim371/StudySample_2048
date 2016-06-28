@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public enum State
 {
-    Loaded, WaitingForInput, CheckingMatches, GameOver, Perfect
+    Loaded, WaitingForInput, CheckingMatches, GameOver, Perfect, Pause
 }
 
 public enum InputDirection
@@ -77,12 +77,14 @@ public static class cSimpleMath
 [RequireComponent(typeof(InputTouch))]
 public class GameManager : Singleton<GameManager> {
 
+    public UILabel debugLabel;
+
     private State state = State.Loaded;
     //private InputDirection inputDirection = InputDirection.NONE;
     private InputTouch inputTouch;
     private bool paused = false;
     private bool menuOn = false;
-    public GameObject menuPanel;
+    //private MenuPanel menuPanel;
 
     protected override void Awake()
     {
@@ -115,26 +117,43 @@ public class GameManager : Singleton<GameManager> {
     // Update is called once per frame
     void Update() {
 
+        debugLabel.text = this.paused.ToString();
+
         //일단 뒤로가기키로 게임종료한다. 추후에 바로 종료 안되게 설정해도 된다.
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (this.menuOn) //만약 메뉴패널 열려있다면 닫자
+            //if (this.menuOn) //만약 메뉴패널 열려있다면 닫자
+            //{
+            //    this.paused = this.menuOn = false;
+            //    //this.menuPanel.SetActive(false);
+            //    this.menuPanel.ReadyClose(); //메뉴패널 닫으라고 한다.
+            //}
+            //else //평상시상태라면 바로 종료
             {
-                this.paused = this.menuOn = !this.menuOn;
-                this.menuPanel.SetActive(false);
-            }
-            else //평상시상태라면 바로 종료
+                //한창 게임 중이라면
+                if (this.state == State.WaitingForInput || this.state == State.CheckingMatches)
+                {
+                    GridManager.Instance.SaveCurrentInfo(); //마지막 숫자 위치와 숫자 레벨 기억하자
+                    ScoreManager.Instance.SaveScoreInfo(true); //최종점수 및 진행점수 저장하자
+                }
+                else //그 외의 최초 상태, 게임오버
+                {
+                    PlayerPrefs.DeleteAll(); //다 비운다.
+                    ScoreManager.Instance.SaveScoreInfo(false); //무조건 최종점수만 저장하자
+                }
+                //GPGSManager.instance.Logout();
                 Application.Quit();
+            }
         }
-        else if (Input.GetKeyDown(KeyCode.Menu)) //메뉴 버튼 누르면
-        {
-            //다른 동작안되도록 일시정지모드도 포함
-            this.paused = this.menuOn = !this.menuOn;
-            if (this.menuOn)
-                this.menuPanel.SetActive(true);
-            else
-                this.menuPanel.SetActive(false);
-        }
+        //else if (Input.GetKeyDown(KeyCode.Menu)) //메뉴 버튼 누르면
+        //{
+        //    //다른 동작안되도록 일시정지모드도 포함
+        //    this.paused = this.menuOn = !this.menuOn;
+        //    if (this.menuOn)
+        //        this.menuPanel.SetActive(true);
+        //    else
+        //        this.menuPanel.SetActive(false);
+        //}
         else if (this.paused == true) //일단 홈키로 어플밖으로 나갔을때는 입력 안 받도록 하자. 추후 타임오버 등을 고려할 때 변경해야될듯..
             return;
 
@@ -206,27 +225,11 @@ public class GameManager : Singleton<GameManager> {
 
     }//Update
 
-    //홈키로 어플 바깥으로 나간 경우
-    void OnApplicationPause(bool pause)
-    {
-        this.paused = pause; //동작되지 않게 하자
-    }
-
-    //어플이 종료될 때
-    void OnApplicationQuit()
-    {
-        //한창 게임 중이라면
-        if (this.state == State.WaitingForInput || this.state == State.CheckingMatches)
-        {
-            GridManager.Instance.SaveCurrentInfo(); //마지막 숫자 위치와 숫자 레벨 기억하자
-            ScoreManager.Instance.SaveScoreInfo(true); //최종점수 및 진행점수 저장하자
-        }
-        else //그 외의 최초 상태, 게임오버
-        {
-            PlayerPrefs.DeleteAll(); //다 비운다.
-            ScoreManager.Instance.SaveScoreInfo(false); //무조건 최종점수만 저장하자
-        }
-    }    
+    ////홈키로 어플 바깥으로 나간 경우
+    //void OnApplicationPause(bool pause)
+    //{
+    //    this.paused = pause; //동작되지 않게 하자
+    //}
     
     //리셋버튼 클릭시 초기화
     public void ResetGame()
@@ -242,6 +245,14 @@ public class GameManager : Singleton<GameManager> {
             PlayerPrefs.DeleteKey("CurrentScore"); //없애자
 
         return;
+    }
+
+    //public void SetPause(MenuPanel menuPanel)
+    public void SetPause(bool isPause)
+    {
+        //this.paused = this.menuOn = true;
+        //this.menuPanel = menuPanel;
+        this.paused = isPause;
     }
 
     /*private void LoadXml()

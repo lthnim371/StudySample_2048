@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<UnlockAchievementList>
+	<UnlockAchievement NumberLevel="_4" ID="CgkIm5ipgJUFEAIQAw"/>
+	<UnlockAchievement NumberLevel="_8" ID="CgkIm5ipgJUFEAIQBA"/>
+	<UnlockAchievement NumberLevel="_16" ID="CgkIm5ipgJUFEAIQBQ"/>
+	<UnlockAchievement NumberLevel="_32" ID="CgkIm5ipgJUFEAIQBw"/>
+	<UnlockAchievement NumberLevel="_64" ID="CgkIm5ipgJUFEAIQCA"/>
+	<UnlockAchievement NumberLevel="_128" ID="CgkIm5ipgJUFEAIQCQ"/>
+	<UnlockAchievement NumberLevel="_256" ID="CgkIm5ipgJUFEAIQCg"/>
+	<UnlockAchievement NumberLevel="_512" ID="CgkIm5ipgJUFEAIQCw"/>
+	<UnlockAchievement NumberLevel="_1024" ID="CgkIm5ipgJUFEAIQDA"/>
+	<UnlockAchievement NumberLevel="_2048" ID="CgkIm5ipgJUFEAIQDQ"/>
+	<UnlockAchievement NumberLevel="_4096" ID="CgkIm5ipgJUFEAIQFw"/>
+	<UnlockAchievement NumberLevel="_8192" ID="CgkIm5ipgJUFEAIQGA"/>
+	<UnlockAchievement NumberLevel="_16384" ID="CgkIm5ipgJUFEAIQGQ"/>
+	<UnlockAchievement NumberLevel="_32768" ID="CgkIm5ipgJUFEAIQGg"/>
+</UnlockAchievementList>
